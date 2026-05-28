@@ -1,0 +1,51 @@
+{
+	"ration":{
+		"type": "consumable",
+		"name": "Rations",
+		"description": "Some food for the road. Restores 10 HP."
+		"value": 10,
+		"statModifiers":{
+			"flat":{
+				"HP": 10
+			}
+		}
+	}
+	"potion":{
+		"type": "consumable",
+		"name": "Health Potion",
+		"description": "Restores 25 HP."
+		"value": 20,
+		"statModifiers":{
+			"flat":{
+				"HP": 25
+			}
+		}
+	}
+	"iron_sword_rusty":{
+		"type": "weapon",
+		"name": "Rusty Iron Sword",
+		"description": "An old sword that has seen better days.",
+		"value": 2,
+		"equipSlot": "hand",
+		"statModifiers":{
+			"flat":{
+				"power": 5,
+				"defense": 1,
+				"speed": -2
+			}
+		}
+	}
+		"leather_cap":{
+		"type": "equipment",
+		"name": "Leather Cap",
+		"description": "A cap made of leather. Offers little protection.",
+		"value": 5,
+		"equipSlot": "head",
+		"statModifiers":{
+			"flat":{
+				"defense": 2
+			}
+		}
+	}
+}
+		
