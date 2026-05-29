@@ -29,7 +29,7 @@
 		"equipSlot": "hand",
 		"statModifiers":{
 			"flat":{
-				"power": 5,
+				"power": 2,
 				"defense": 1,
 				"speed": -2
 			}
@@ -47,5 +47,19 @@
 			}
 		}
 	}
+		"iron_sword":{
+		"type": "weapon",
+		"name": "Iron Sword",
+		"description": "A sword made of iron.",
+		"value": 5,
+		"equipSlot": "hand",
+		"statModifiers":{
+			"flat":{
+				"power": 5,
+				"defense": 2,
+				"speed": -2
+			}
+		}
+	}		
 }
 		
