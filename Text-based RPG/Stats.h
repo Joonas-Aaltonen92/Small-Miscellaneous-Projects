@@ -36,5 +36,10 @@ struct ActorStats {
 
 struct StatModifiers {
 	std::array<int, (size_t)CombatStat::COUNT> flatModifiers{};
-	std::array<float, (size_t)CombatStat::COUNT> multipliers{1.0f};
+	std::array<float, (size_t)CombatStat::COUNT> multipliers{};
+
+	StatModifiers() {
+		flatModifiers.fill(0);
+		multipliers.fill(1.0f);
+	}
 };

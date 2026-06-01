@@ -75,7 +75,11 @@ std::shared_ptr<Item> ItemDatabase::createItem(const std::string& itemID) const 
 }
 
 StatModifiers ItemDatabase::parseStatModifiers(const nlohmann::json& jsonMods) {
-	StatModifiers mods{};
+	StatModifiers mods;
+
+	//Setting defaults so that there battle logic has valid data to work with and no gartbage.
+	mods.flatModifiers.fill(0);
+	mods.multipliers.fill(1.0f);
 
 	if (!jsonMods.is_object())
 		return mods;

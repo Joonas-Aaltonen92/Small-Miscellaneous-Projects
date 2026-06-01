@@ -65,7 +65,7 @@ public:
 	const Inventory& GetLoot() const { return _loot; }
 	std::array<std::shared_ptr<Equipment>, (size_t)EquipmentSlot::COUNT> GetEquipped() const { return _equipped; }
 
-	void attack(Player& player) {
+	void physicalAttack(Player& player) {
 		int enemyPower = _stats.baseStats[(size_t)CombatStat::POWER];
 		for (auto& e : _equipped) {
 			if (e) {
@@ -86,6 +86,29 @@ public:
 			damage = 0;
 		player.GetStats().baseStats[(size_t)CombatStat::HP] -= damage;
 		std::println("{} attacked, doing {} points of damage!", _name, damage);
+	}
+
+	void magicAttack(Player& player) {
+		int enemyPower = _stats.baseStats[(size_t)CombatStat::SORCERY];
+		for (auto& e : _equipped) {
+			if (e) {
+				enemyPower += e->getModifiers().flatModifiers[(size_t)CombatStat::SORCERY];
+				enemyPower = static_cast<int>(enemyPower * e->getModifiers().multipliers[(size_t)CombatStat::SORCERY]);
+			}
+		}
+		int playerDefense = player.GetStats().baseStats[(size_t)CombatStat::WILLPOWER];
+		for (auto& e : _equipped) {
+			if (e) {
+				playerDefense += e->getModifiers().flatModifiers[(size_t)CombatStat::WILLPOWER];
+				playerDefense = static_cast<int>(playerDefense * e->getModifiers().multipliers[(size_t)CombatStat::WILLPOWER]);
+			}
+		}
+
+		int damage = playerDefense - enemyPower;
+		if (damage < 0)
+			damage = 0;
+		player.GetStats().baseStats[(size_t)CombatStat::HP] -= damage;
+		std::println("{} sorcered, doing {} points of damage!", _name, damage);
 	}
 };
 
@@ -126,7 +149,7 @@ public:
 			std::cin.get();
 		}
 	}
-	void attack(Enemy& enemy) {
+	void physicalAttack(Enemy& enemy) {
 		int playerPower = _stats.baseStats[(size_t)CombatStat::POWER]; //Player power without equipment or buffs.
 		//Loop through equipped items and add modifiers.
 		for (auto& e : _equipped) {
@@ -149,5 +172,26 @@ public:
 		std::println("You attacked, doing {} points of damage!", damage);
 	}
 
-	//TODO: Copy attack() for magic battles
+	void magicAttack(Enemy& enemy) {
+		int playerPower = _stats.baseStats[(size_t)CombatStat::SORCERY];
+		for (auto& e : _equipped) {
+			if (e) {
+				playerPower += e->getModifiers().flatModifiers[(size_t)CombatStat::SORCERY];
+				playerPower = static_cast<int>(playerPower * e->getModifiers().multipliers[(size_t)CombatStat::SORCERY]);
+			}
+		}
+		int enemyDefense = enemy.GetStats().baseStats[(size_t)CombatStat::WILLPOWER];
+		for (auto& e : _equipped) {
+			if (e) {
+				enemyDefense += e->getModifiers().flatModifiers[(size_t)CombatStat::WILLPOWER];
+				enemyDefense = static_cast<int>(enemyDefense * e->getModifiers().multipliers[(size_t)CombatStat::WILLPOWER]);
+			}
+		}
+
+		int damage = playerPower - enemyDefense;
+		if (damage < 0)
+			damage = 0;
+		enemy.GetStats().baseStats[(size_t)CombatStat::HP] -= damage;
+		std::println("You threw a fireball, doing {} points of damage!", damage);
+	}
 };
