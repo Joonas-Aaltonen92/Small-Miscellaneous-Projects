@@ -10,6 +10,7 @@
 class Actor{
 protected:
 	std::string _name;
+	std::string _description;
 
 	virtual bool equals(const Actor& other) const {
 		const auto& o = static_cast<const Actor&>(other);
@@ -17,7 +18,8 @@ protected:
 	}
 
 public:
-	Actor(std::string name, Inventory inventory, ActorStats stats) : _name(name){}
+	const std::string ID;
+	Actor(std::string id, const std::string& name, const std::string description) : ID(id), _name(name), _description(description) {}
 	virtual ~Actor() = default;
 	Actor(const Actor&) = default;
 	Actor(Actor&&) = default;
@@ -32,7 +34,7 @@ public:
 
 	std::string GetName() const { return _name; }
 
-	virtual std::shared_ptr<Actor> clone() const = 0;
+	virtual std::unique_ptr<Actor> clone() const = 0;
 };
 
 class NPC : public Actor {
@@ -45,11 +47,10 @@ protected:
 		return _dialogue == o._dialogue;
 	}
 public:
-	NPC(std::string name, Inventory inventory, ActorStats stats, std::vector<std::string> dialogue) : Actor(name, inventory, stats), _dialogue(std::move(dialogue)) {}
-	std::shared_ptr<Actor> clone() const override {
-		return std::make_shared<NPC>(*this);
+	NPC(std::string id, const std::string& name, const std::string description, std::vector<std::string>& dialogue) : Actor(id, name, description), _dialogue(std::move(dialogue)) {}
+	std::unique_ptr<Actor> clone() const override {
+		return std::make_unique<NPC>(*this);
 	}
-	
 	std::vector<std::string> GetDialogue() const { return _dialogue; }
 };
 
@@ -59,11 +60,16 @@ private:
 	Inventory _loot;
 	std::array<std::shared_ptr<Equipment>, (size_t)EquipmentSlot::COUNT> _equipped{};
 public:
+	Enemy(std::string id, const std::string& name, const std::string description, ActorStats stats, Inventory loot, std::array<std::shared_ptr<Equipment>, (size_t)EquipmentSlot::COUNT> equipped) : Actor(id, name, description), _stats(stats), _loot(loot), _equipped(equipped) {}
 	ActorStats& GetStats() { return _stats; }
 	const ActorStats& GetStats() const { return _stats; }
 	Inventory& GetLoot() { return _loot; }
 	const Inventory& GetLoot() const { return _loot; }
 	std::array<std::shared_ptr<Equipment>, (size_t)EquipmentSlot::COUNT> GetEquipped() const { return _equipped; }
+
+	std::unique_ptr<Actor> clone() const override {
+		return std::make_unique<Enemy>(*this);
+	}
 
 	void physicalAttack(Player& player) {
 		int enemyPower = _stats.baseStats[(size_t)CombatStat::POWER];
@@ -121,11 +127,15 @@ public:
 	}
 };
 
-class Merchant : public NPC {
+class Merchant : public Actor {
 private:
 	Inventory _inventory;
 public:
+	Merchant(std::string id, const std::string& name, const std::string description, Inventory inventory) : Actor(id, name, description), _inventory(inventory) {}
 	Inventory GetInventory() const { return _inventory; }
+	std::unique_ptr<Actor> clone() const override {
+		return std::make_unique<Merchant>(*this);
+	}
 };
 
 //For chests, barrels, cupboards, etc. Even though I'm probably just going to use chests only.
@@ -133,11 +143,10 @@ class Container : public Actor {
 private:
 		Inventory _inventory;
 public:
+	Container(std::string id, const std::string& name, const std::string description, Inventory inventory) : Actor(id, name, description), _inventory(inventory) {}
+	std::unique_ptr<Actor> clone() const override {
+		return std::make_unique<Container>(*this);
+	}
 	Inventory& GetInventory() { return _inventory; }
 	const Inventory& GetInventory() const { return _inventory; }
-
-	//Called when Container is created.
-	void AddItem(std::shared_ptr<Item> item, int quantity = 1) {
-		_inventory.addItem(std::move(item), quantity);
-	}
 };
