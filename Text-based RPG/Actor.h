@@ -13,8 +13,8 @@ protected:
 	std::string _description;
 
 	virtual bool equals(const Actor& other) const {
-		const auto& o = static_cast<const Actor&>(other);
-		return _name == o._name;
+		const auto& a = static_cast<const Actor&>(other);
+		return _name == a._name;
 	}
 
 public:
@@ -43,8 +43,8 @@ protected:
 	
 	bool equals(const Actor& other) const override {
 		if (!Actor::equals(other)) return false;
-		const auto& o = static_cast<const NPC&>(other);
-		return _dialogue == o._dialogue;
+		const auto& n = static_cast<const NPC&>(other);
+		return _dialogue == n._dialogue;
 	}
 public:
 	NPC(std::string id, const std::string& name, const std::string description, std::vector<std::string>& dialogue) : Actor(id, name, description), _dialogue(std::move(dialogue)) {}
@@ -58,7 +58,14 @@ class Enemy : public Actor {
 private:
 	ActorStats _stats;
 	Inventory _loot;
+	std::vector<float> _lootDropRates{};
 	std::array<std::shared_ptr<Equipment>, (size_t)EquipmentSlot::COUNT> _equipped{};
+
+	bool equals(const Actor& other) const override {
+		if (!Actor::equals(other)) return false;
+		const auto& e = static_cast<const Enemy&>(other);
+		return _stats.baseStats == e._stats.baseStats && _stats.growthRates == e._stats.growthRates && _loot == e._loot && _lootDropRates == e._lootDropRates && _equipped == e._equipped;
+	}
 public:
 	Enemy(std::string id, const std::string& name, const std::string description, ActorStats stats, Inventory loot, std::array<std::shared_ptr<Equipment>, (size_t)EquipmentSlot::COUNT> equipped) : Actor(id, name, description), _stats(stats), _loot(loot), _equipped(equipped) {}
 	ActorStats& GetStats() { return _stats; }
@@ -149,4 +156,10 @@ public:
 	}
 	Inventory& GetInventory() { return _inventory; }
 	const Inventory& GetInventory() const { return _inventory; }
+
+	void open() {
+		std::println("You open {} and find:", _name);
+		for (const auto& stack : _inventory.getStacks())
+			std::println("- {} x{}", stack.second._item->getName(), stack.second._quantity);
+	}
 };

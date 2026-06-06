@@ -58,3 +58,8 @@ void Player::magicAttack(Enemy& enemy) {
 	enemy.GetStats().baseStats[(size_t)CombatStat::HP] -= damage;
 	std::println("You threw a fireball, doing {} points of damage!", damage);
 }
+
+void Player::openContainer(Container& container) {
+	container.open();
+	
+}

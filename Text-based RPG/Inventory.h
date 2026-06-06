@@ -42,6 +42,8 @@ public:
 		auto it = stacks.find(itemID);
 		if (it != stacks.end()) {
 			it->second.remove(quantity);
+			if (it->second.isEmpty())
+				stacks.erase(it);
 			return true;
 		}
 		return false;
