@@ -7,14 +7,17 @@
 #include "Stats.h"
 #include "Inventory.h"
 
+class Player;//Forward declaration for the enemy combat stuff.
+
 class Actor{
 protected:
+	std::string _type;
 	std::string _name;
 	std::string _description;
 
 	virtual bool equals(const Actor& other) const {
 		const auto& a = static_cast<const Actor&>(other);
-		return _name == a._name;
+		return _type == a._type && _name == a._name && _description == a._description;
 	}
 
 public:
@@ -78,60 +81,8 @@ public:
 		return std::make_unique<Enemy>(*this);
 	}
 
-	void physicalAttack(Player& player) {
-		int enemyPower = _stats.baseStats[(size_t)CombatStat::POWER];
-		float multiplier = 1.0f;
-		for (auto& e : _equipped) {
-			if (e) {
-				enemyPower += e->getModifiers().flatModifiers[(size_t)CombatStat::POWER];
-				multiplier += e->getModifiers().multipliers[(size_t)CombatStat::POWER];
-			}
-		}
-		enemyPower = static_cast<int>(enemyPower * multiplier);
-
-		int playerDefense = player.GetStats().baseStats[(size_t)CombatStat::FORTITUDE];
-		float defMultiplier = 1.0f;
-		for (auto& e : _equipped) {
-			if (e) {
-				playerDefense += e->getModifiers().flatModifiers[(size_t)CombatStat::FORTITUDE];
-				defMultiplier += e->getModifiers().multipliers[(size_t)CombatStat::FORTITUDE];
-			}
-		}
-		playerDefense = static_cast<int>(playerDefense * defMultiplier);
-
-		int damage = playerDefense - enemyPower;
-		if (damage < 0)
-			damage = 0;
-		player.GetStats().baseStats[(size_t)CombatStat::HP] -= damage;
-		std::println("{} attacked, doing {} points of damage!", _name, damage);
-	}
-
-	void magicAttack(Player& player) {
-		int enemyPower = _stats.baseStats[(size_t)CombatStat::SORCERY];
-		float multiplier = 1.0f;
-		for (auto& e : _equipped) {
-			if (e) {
-				enemyPower += e->getModifiers().flatModifiers[(size_t)CombatStat::SORCERY];
-				multiplier += e->getModifiers().multipliers[(size_t)CombatStat::SORCERY];
-			}
-		}
-		enemyPower = static_cast<int>(enemyPower * multiplier);
-		int playerDefense = player.GetStats().baseStats[(size_t)CombatStat::WILLPOWER];
-		float defMultiplier = 1.0f;
-		for (auto& e : _equipped) {
-			if (e) {
-				playerDefense += e->getModifiers().flatModifiers[(size_t)CombatStat::WILLPOWER];
-				defMultiplier += e->getModifiers().multipliers[(size_t)CombatStat::WILLPOWER];
-			}
-		}
-		playerDefense = static_cast<int>(playerDefense * defMultiplier);
-
-		int damage = playerDefense - enemyPower;
-		if (damage < 0)
-			damage = 0;
-		player.GetStats().baseStats[(size_t)CombatStat::HP] -= damage;
-		std::println("{} sorcered, doing {} points of damage!", _name, damage);
-	}
+	void physicalAttack(Player& player);
+	void magicAttack(Player& player);
 };
 
 class Merchant : public Actor {

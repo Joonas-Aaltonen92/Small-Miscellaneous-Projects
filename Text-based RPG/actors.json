@@ -1,0 +1,86 @@
+{
+	peasant_tim:{
+		"type":"mpc",
+		"name":"Tim the Peasant",
+		"description":"A man in raggeed clothes and a dull look on his face.",
+		"dialogue":["Hullo there, mister!", "Can you help find my shoes? A rat stole them and scurried down to the sewers."]
+	}
+	skeleton_jim:{
+		"type":"mpc",
+		"name":"Skeleton Jim",
+		"description":"A skeleton, but it doesn't look hostile...",
+		"dialogue":["BOOOO!!", "Haha! Just kidding, mate. Did I scare ya?", "Listen, I dropped my mace in here somewhere. You can keep it if you find it."]
+	}
+	
+	
+	skeleton:{
+		"type":"enemy",
+		"name":"Skeleton",
+		"description":"A reanimated pile of bones."
+		"level":1,
+		"expYield":1,
+		"stats":{
+			"combatStat":{
+				"hp":10,
+				"mp":0,
+				"power":5,
+				"fortitude":4,
+				"sorcery":1,
+				"willpower":1,
+				"speed":2,
+				"luck":1
+			}
+			"growthStat":{
+				"vitality":1.6,
+				"wisdom":1.0,
+				"strength":1.5,
+				"endurance":1.3,
+				"intelligence":1.0,
+				"resolve":1.0,
+				"agility":1.4,
+				"fate":1.05
+			}
+		}
+		"loot":{
+			"bone":95,
+			"iron_sword":5,
+		}
+		"equipment":{
+			"head":["leather_cap", "iron_helmet_rusty","bucket"],
+			"waist":["rope","leather_belt"]
+		}
+	}
+	rat:{
+		"type":"enemy",
+		"name":"Sewer Rat",
+		"description":"Nasty little bugger."
+		"level":1,
+		"expYield":1,
+		"stats":{
+			"combatStat":{
+				"hp":5,
+				"mp":0,
+				"power":1,
+				"fortitude":1,
+				"sorcery":1,
+				"willpower":1,
+				"speed":5,
+				"luck":1
+			}
+			"growthStat":{
+				"vitality":1.2,
+				"wisdom":1.0,
+				"strength":1.1,
+				"endurance":1.2,
+				"intelligence":1.0,
+				"resolve":1.0,
+				"agility":1.4,
+				"fate":1.0
+			}
+		}
+		"loot":{
+			"rat_tail":50,
+			"cheese":5,
+		}
+	}
+}

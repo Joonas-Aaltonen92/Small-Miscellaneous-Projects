@@ -7,7 +7,6 @@
 
 class Game {
 private:
-	//Needs a reference to the player character, and the databases
 	Player _player;
 	ActorDatabase _actorDatabase;
 	ItemDatabase _itemDatabase;

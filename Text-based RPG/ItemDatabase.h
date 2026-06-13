@@ -26,6 +26,7 @@ private:
 	const std::unordered_map<std::string, EquipmentSlot> stringToEquipmentSlotMap = {
 		{"head", EquipmentSlot::HEAD},
 		{"chest", EquipmentSlot::CHEST},
+		{"waist", EquipmentSlot::WAIST},
 		{"legs", EquipmentSlot::LEGS},
 		{"body", EquipmentSlot::BODY},
 		{"feet", EquipmentSlot::FEET},
