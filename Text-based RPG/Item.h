@@ -3,8 +3,7 @@
 #include "Stats.h"
 
 enum class ItemType {
-	WEAPON,
-	ARMOR,
+	EQUIPMENT,
 	CONSUMABLE,
 	TRINKET,
 	CURRENCY,
@@ -83,7 +82,7 @@ private:
 		return _slot == e._slot && _modifiers.flatModifiers == e._modifiers.flatModifiers && _modifiers.multipliers == e._modifiers.multipliers;
 	}
 public:
-	Equipment(std::string id, const std::string& name, const std::string& description, int value, ItemType type, EquipmentSlot slot, StatModifiers modifiers) : Item(id, name, description, value, type), _slot(slot), _modifiers(modifiers) {}
+	Equipment(std::string id, const std::string& name, const std::string& description, int value, ItemType type = ItemType::EQUIPMENT, EquipmentSlot slot, StatModifiers modifiers) : Item(id, name, description, value, type), _slot(slot), _modifiers(modifiers) {}
 	std::shared_ptr<Item> clone() const override {
 		return std::make_shared<Equipment>(*this);
 	}
@@ -99,7 +98,7 @@ class Consumable : public Item {
 		return _modifiers.flatModifiers == c._modifiers.flatModifiers && _modifiers.multipliers == c._modifiers.multipliers;
 	}
 public:
-	Consumable(std::string id, const std::string& name, const std::string& description, int value, ItemType type = ItemType::CONSUMABLE) : Item(id,name, description, value, type) {}
+	Consumable(std::string id, const std::string& name, const std::string& description, int value, ItemType type = ItemType::CONSUMABLE, StatModifiers modifiers) : Item(id,name, description, value, type), _modifiers(modifiers) {}
 
 	bool isStackable() const override { return true; }
 	int maxStackSize() const override { return 99; }

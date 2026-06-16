@@ -1,7 +1,6 @@
 #pragma once
 #include <map>
 #include <algorithm>
-#include "Item.h"
 #include "ItemStack.h"
 
 class Inventory {

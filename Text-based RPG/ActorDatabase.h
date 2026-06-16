@@ -2,9 +2,10 @@
 #include <unordered_map>
 #include <string>
 #include <memory>
-#include "Actor.h"
 #include "Stats.h"
 #include <json.hpp> //nlohmann/json library
+
+class Actor;
 
 class ActorDatabase {
 private:

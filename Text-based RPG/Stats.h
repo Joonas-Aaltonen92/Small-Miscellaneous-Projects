@@ -30,7 +30,7 @@ enum class GrowthStat : uint8_t {
 };
 
 struct ActorStats {
-	std::array<int, (size_t)GrowthStat::COUNT> baseStats{};
+	std::array<int, (size_t)CombatStat::COUNT> baseStats{};
 	std::array<float, (size_t)GrowthStat::COUNT> growthRates{};
 };
 

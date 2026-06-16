@@ -2,10 +2,9 @@
 #include <string>
 #include <memory>
 #include <array>
-#include "Stats.h"
-#include "Inventory.h"
-#include "Item.h"
-#include "Actor.h"
+
+class Item;
+class Inventory;
 
 
 class Player{

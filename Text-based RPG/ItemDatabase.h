@@ -13,8 +13,7 @@ private:
 	std::shared_ptr<Item> createItemFromJson(const std::string& id, const nlohmann::json& data);
 
 	const std::unordered_map<std::string, ItemType> stringToItemTypeMap = {
-		{"weapon", ItemType::WEAPON},
-		{"armor", ItemType::ARMOR},
+		{"equipment", ItemType::EQUIPMENT},
 		{"consumable", ItemType::CONSUMABLE},
 		{"trinket", ItemType::TRINKET},
 		{"currency", ItemType::CURRENCY},

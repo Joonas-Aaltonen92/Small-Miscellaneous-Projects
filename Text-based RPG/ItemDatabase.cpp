@@ -11,26 +11,27 @@ std::shared_ptr<Item> ItemDatabase::createItemFromJson(const std::string& id, co
 	if (type == "equipment") {
 		EquipmentSlot slot = getEquipmentSlotFromString(data.value("equipSlot", "none"));
 		StatModifiers modifiers = parseStatModifiers(data["statModifiers"]);
-		return std::make_shared<Equipment>(id, name, description, value, type, slot, modifiers);
+		return std::make_shared<Equipment>(id, name, description, value, itemType, slot, modifiers);
 	}
 	else if (type == "consumable") {
 		StatModifiers modifiers = parseStatModifiers(data["statModifiers"]);
-		return std::make_shared<Consumable>(id, name, description, value, type, modifiers);
+		return std::make_shared<Consumable>(id, name, description, value, itemType, modifiers);
 	}
 	else if (type == "trinket") {
-		return std::make_shared<Trinket>(id, name, description, value, type);
+		return std::make_shared<Trinket>(id, name, description, value, itemType);
 	}
 	else if (type == "currency") {
-		return std::make_shared<Currency>(id, name, description, value, type);
+		return std::make_shared<Currency>(id, name, description, value, itemType);
 	}
 	else if (type == "key") {
-		return std::make_shared<Key>(id, name, description, value, type);
+		return std::make_shared<Key>(id, name, description, value, itemType);
 	}
 	else if (type == "keyItem") {
-		return std::make_shared<KeyItem>(id, name, description, value, type);
+		return std::make_shared<KeyItem>(id, name, description, value, itemType);
 	}
-	//Default fallback
-	return std::make_shared<Item>(id, name, description, value, type);
+	//Default fallback (unknown item)
+	std::println("Unknown item type: {}", type);
+	return nullptr;
 }
 
 
