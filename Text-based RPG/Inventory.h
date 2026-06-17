@@ -2,17 +2,27 @@
 #include <string>
 #include <map>
 #include <algorithm>
+#include <memory>
+#include <vector>
+#include <utility>
 
 class ItemDatabase;
+class Item;
+
+enum class InventorySortMode {
+	NAME,
+	VALUE,
+	TYPE
+};
+
+using InventoryEntry = std::pair<std::string, int>;
+//Change to
+//using InventoryEntry = std::pair<std::string, int>::value_type;
+//If getting constructor/conversion errors
 
 class Inventory {
 private:
 	std::map<std::string, int> stacks;
-
-	bool equals(const Inventory& other) const {
-		return stacks == other.stacks;
-	}
-
 	const ItemDatabase& database;
 
 public:
@@ -20,32 +30,25 @@ public:
 	~Inventory() = default;
 	Inventory(const Inventory&) = default;
 	Inventory(Inventory&&) = default;
-	Inventory& operator=(const Inventory&) = default;
+	Inventory& operator=(const Inventory&) = delete;
 	Inventory& operator=(Inventory&&) = default;
 
 	bool operator==(const Inventory& other) const {
-		return typeid(*this) == typeid(other) && equals(other);
+		return stacks == other.stacks;
 	}
 	bool operator!=(const Inventory& other) const {
 		return !(*this == other);
 	}
 
-	bool addItem(std::string itemID, int quantity = 1);
+	bool addItem(std::string& itemID, int quantity = 1);
 	bool removeItem(const std::string& itemID, int quantity = 1);
 	int getQuantity(const std::string& itemID) const;
 
-	void sortByName(bool ascending = true);
-	void sortByValue(bool ascending = true);
+	const std::map<std::string, int> getStacks() { return stacks; }
+	const std::string getItemName(const std::string& itemID);
+	const ItemType getItemType(const std::string& itemID);//Maybe not needed
+	const int getItemValue(const std::string& itemID);
 
-	void sortByType(bool ascending = true) {
-		std::sort(stacks.begin(), stacks.end(), [ascending](const ItemStack& a, const ItemStack& b) {
-			if (!a._item || !b._item) return false;
-			ItemType typeA = a._item->getType();
-			ItemType typeB = b._item->getType();
-			if (ascending)
-				return typeA < typeB;
-			else
-				return typeB < typeA;
-			});
-	}
+	std::vector<InventoryEntry> getSortedItems(InventorySortMode mode, bool ascending = true) const;
+	std::shared_ptr<Item> getItem(const std::string& itemID);
 };

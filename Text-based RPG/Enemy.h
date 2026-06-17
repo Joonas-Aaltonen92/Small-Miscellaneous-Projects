@@ -1,5 +1,6 @@
 #pragma once
 #include "Actor.h"
+#include "Item.h"
 
 class Enemy : public Actor {
 private:

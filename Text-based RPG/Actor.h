@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <print>
 #include <memory>
 #include <array>
 #include <vector>
@@ -86,6 +87,6 @@ public:
 	void open() {
 		std::println("You open {} and find:", _name);
 		for (const auto& stack : _inventory.getStacks())
-			std::println("- {} x{}", stack.second._item->getName(), stack.second._quantity);
+			std::println("- {} x{}", _inventory.getItemName(stack.first), stack.second);
 	}
 };

@@ -20,9 +20,6 @@ std::shared_ptr<Item> ItemDatabase::createItemFromJson(const std::string& id, co
 	else if (type == "trinket") {
 		return std::make_shared<Trinket>(id, name, description, value, itemType);
 	}
-	else if (type == "currency") {
-		return std::make_shared<Currency>(id, name, description, value, itemType);
-	}
 	else if (type == "key") {
 		return std::make_shared<Key>(id, name, description, value, itemType);
 	}

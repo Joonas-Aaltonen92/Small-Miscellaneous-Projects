@@ -16,7 +16,6 @@ private:
 		{"equipment", ItemType::EQUIPMENT},
 		{"consumable", ItemType::CONSUMABLE},
 		{"trinket", ItemType::TRINKET},
-		{"currency", ItemType::CURRENCY},
 		{"key", ItemType::KEY},
 		{"keyitem", ItemType::KEYITEM},
 		{"unknown", ItemType::UNKNOWN}

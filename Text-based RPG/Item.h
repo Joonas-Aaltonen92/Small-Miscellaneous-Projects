@@ -6,7 +6,6 @@ enum class ItemType {
 	EQUIPMENT,
 	CONSUMABLE,
 	TRINKET,
-	CURRENCY,
 	KEY,
 	KEYITEM,
 	UNKNOWN,
@@ -115,16 +114,6 @@ public:
 	int maxStackSize() const override { return 99; }
 	std::shared_ptr<Item> clone() const override {
 		return std::make_shared<Trinket>(*this);
-	}
-};
-//Currency is also basically the base Item class, just with a constant value of 1.
-class Currency : public Item {
-public:
-	Currency(std::string id, const std::string& name, const std::string& description, int value = 1, ItemType type = ItemType::CURRENCY) : Item(id, name, description, value, type) {}
-	bool isStackable() const override { return true; }
-	int maxStackSize() const override { return 1000000; }
-	std::shared_ptr<Item> clone() const override {
-		return std::make_shared<Currency>(*this);
 	}
 };
 class Key : public Item {

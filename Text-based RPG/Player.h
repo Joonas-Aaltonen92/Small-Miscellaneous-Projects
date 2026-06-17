@@ -2,9 +2,11 @@
 #include <string>
 #include <memory>
 #include <array>
+#include "Stats.h"
+#include "Inventory.h"
 
 class Item;
-class Inventory;
+
 
 
 class Player{
@@ -36,12 +38,12 @@ public:
 	void magicAttack(Enemy& enemy);
 	void openContainer(Container& container) {
 		container.open();//Prints the insides.
-		auto& stacks = container.GetInventory().getStacks();
+		const auto& stacks = container.GetInventory().getStacks();
 		for (const auto& stack : stacks)
-			addItemToInventory(stack.second._item, stack.second._quantity);
+			addItemToInventory(stack.first, stack.second);
 	}
-	void addItemToInventory(std::shared_ptr<Item> item, int quantity = 1) {
-		_inventory.addItem(std::move(item), quantity);
+	void addItemToInventory(std::string itemID, int quantity = 1) {
+		_inventory.addItem(itemID, quantity);
 	}
 	void removeItemFromInventory(const std::string& itemID, int quantity = 1) {
 		_inventory.removeItem(itemID, quantity);
