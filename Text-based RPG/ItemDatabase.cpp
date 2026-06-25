@@ -1,6 +1,44 @@
 #include "ItemDatabase.h"
 
-std::shared_ptr<Item> ItemDatabase::createItemFromJson(const std::string& id, const nlohmann::json& data) {
+namespace {
+	const std::unordered_map<std::string, ItemType> stringToItemTypeMap = {
+	{"equipment", ItemType::EQUIPMENT},
+	{"consumable", ItemType::CONSUMABLE},
+	{"trinket", ItemType::TRINKET},
+	{"key", ItemType::KEY},
+	{"keyitem", ItemType::KEYITEM},
+	{"unknown", ItemType::UNKNOWN}
+	};
+
+	const std::unordered_map<std::string, EquipmentSlot> stringToEquipmentSlotMap = {
+		{"head", EquipmentSlot::HEAD},
+		{"chest", EquipmentSlot::CHEST},
+		{"waist", EquipmentSlot::WAIST},
+		{"legs", EquipmentSlot::LEGS},
+		{"body", EquipmentSlot::BODY},
+		{"feet", EquipmentSlot::FEET},
+		{"arms", EquipmentSlot::ARMS},
+		{"hand", EquipmentSlot::HAND},
+		{"ring", EquipmentSlot::RING},
+		{"amulet", EquipmentSlot::AMULET},
+		{"none", EquipmentSlot::NONE}
+	};
+
+	const std::unordered_map<std::string, CombatStat> stringToCombatStatMap = {
+		{"hp", CombatStat::HP},
+		{"maxhp", CombatStat::MAXHP},
+		{"mp", CombatStat::MP},
+		{"maxmp", CombatStat::MAXMP},
+		{"power", CombatStat::POWER},
+		{"fortitude", CombatStat::FORTITUDE},
+		{"sorcery", CombatStat::SORCERY},
+		{"willpower", CombatStat::WILLPOWER},
+		{"speed", CombatStat::SPEED},
+		{"luck", CombatStat::LUCK}
+	};
+}
+
+std::unique_ptr<Item> ItemDatabase::createItemFromJson(const std::string& id, const nlohmann::json& data) {
 	std::string type = data.value("type", "unknown");
 	std::string name = data.value("name", "unknown");
 	std::string description = data.value("description", "");
@@ -8,27 +46,24 @@ std::shared_ptr<Item> ItemDatabase::createItemFromJson(const std::string& id, co
 	
 	ItemType itemType = getItemTypeFromString(type);
 
-	if (type == "equipment") {
+	switch (itemType) {
+	case ItemType::EQUIPMENT:
 		EquipmentSlot slot = getEquipmentSlotFromString(data.value("equipSlot", "none"));
+		StatModifiers modifiers = parseStatModifiers(data.value("statModifiers", nlohmann::json::object()));
+		return std::make_unique<Equipment>(id, name, description, value, itemType, slot, modifiers);
+	case ItemType::CONSUMABLE:
 		StatModifiers modifiers = parseStatModifiers(data["statModifiers"]);
-		return std::make_shared<Equipment>(id, name, description, value, itemType, slot, modifiers);
+		return std::make_unique<Consumable>(id, name, description, value, itemType, modifiers);
+	case ItemType::TRINKET:
+		return std::make_unique<Trinket>(id, name, description, value, itemType);
+	case ItemType::KEY:
+		return std::make_unique<Key>(id, name, description, value, itemType);
+	case ItemType::KEYITEM:
+		return std::make_unique<KeyItem>(id, name, description, value, itemType);
+	default:
+		std::println("Unknown item type: {}", type);
+		return nullptr;
 	}
-	else if (type == "consumable") {
-		StatModifiers modifiers = parseStatModifiers(data["statModifiers"]);
-		return std::make_shared<Consumable>(id, name, description, value, itemType, modifiers);
-	}
-	else if (type == "trinket") {
-		return std::make_shared<Trinket>(id, name, description, value, itemType);
-	}
-	else if (type == "key") {
-		return std::make_shared<Key>(id, name, description, value, itemType);
-	}
-	else if (type == "keyItem") {
-		return std::make_shared<KeyItem>(id, name, description, value, itemType);
-	}
-	//Default fallback (unknown item)
-	std::println("Unknown item type: {}", type);
-	return nullptr;
 }
 
 
@@ -48,6 +83,7 @@ bool ItemDatabase::loadFromJson(const std::string& filename) {
 		return false;
 	}
 
+	_prototypes.reserve(jsonData.size());
 	for (auto& [id, data] : jsonData.items()) {
 		try {
 			auto item = createItemFromJson(id, data);
@@ -59,12 +95,12 @@ bool ItemDatabase::loadFromJson(const std::string& filename) {
 		catch (const std::exception& e) {
 			std::cerr << "Error loading item '" << id << "': " << e.what() << std::endl;
 		}
-		std::cout << "Loaded " << _prototypes.size() << " items.\n";
-		return true;
 	}
+	std::cout << "Loaded " << _prototypes.size() << " items.\n";
+	return true;
 }
 
-std::shared_ptr<Item> ItemDatabase::createItem(const std::string& itemID) const {
+std::unique_ptr<Item> ItemDatabase::createItem(const std::string& itemID) const {
 	auto it = _prototypes.find(itemID);
 	if (it != _prototypes.end()) {
 		return it->second->clone();
@@ -88,7 +124,7 @@ StatModifiers ItemDatabase::parseStatModifiers(const nlohmann::json& jsonMods) {
 		for (auto& [key, value] : flat.items()) {
 			CombatStat stat = getCombatStatFromString(key);
 			if (stat != CombatStat::UNKNOWN && stat != CombatStat::COUNT) {
-				mods.flatModifiers[(size_t)stat] = value.get<int>();
+				mods.flatModifiers[std::to_underlying(stat)] = value.get<int>();
 			}
 		}
 	}

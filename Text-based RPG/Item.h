@@ -2,7 +2,7 @@
 #include <print>
 #include "Stats.h"
 
-enum class ItemType {
+enum class ItemType : int {
 	EQUIPMENT,
 	CONSUMABLE,
 	TRINKET,
@@ -41,7 +41,7 @@ public:
 	bool operator!=(const Item& other) const {
 		return !(*this == other);
 	}
-	virtual std::shared_ptr<Item> clone() const = 0;
+	virtual std::unique_ptr<Item> clone() const = 0;
 
 	void displayItem() const {
 		std::println("Name: {}\nDescription: {}\nValue: {}\n", _name, _description, _value);
@@ -82,8 +82,8 @@ private:
 	}
 public:
 	Equipment(std::string id, const std::string& name, const std::string& description, int value, ItemType type = ItemType::EQUIPMENT, EquipmentSlot slot, StatModifiers modifiers) : Item(id, name, description, value, type), _slot(slot), _modifiers(modifiers) {}
-	std::shared_ptr<Item> clone() const override {
-		return std::make_shared<Equipment>(*this);
+	std::unique_ptr<Item> clone() const override {
+		return std::make_unique<Equipment>(*this);
 	}
 	EquipmentSlot getSlot() const { return _slot; }
 	StatModifiers getModifiers() const { return _modifiers; }
@@ -101,8 +101,8 @@ public:
 
 	bool isStackable() const override { return true; }
 	int maxStackSize() const override { return 99; }
-	std::shared_ptr<Item> clone() const override {
-		return std::make_shared<Consumable>(*this);
+	std::unique_ptr<Item> clone() const override {
+		return std::make_unique<Consumable>(*this);
 	}
 };
 
@@ -112,8 +112,8 @@ public:
 	Trinket(std::string id, const std::string& name, const std::string& description, int value, ItemType type = ItemType::TRINKET) : Item(id, name, description, value, type) {}
 	bool isStackable() const override { return true; }
 	int maxStackSize() const override { return 99; }
-	std::shared_ptr<Item> clone() const override {
-		return std::make_shared<Trinket>(*this);
+	std::unique_ptr<Item> clone() const override {
+		return std::make_unique<Trinket>(*this);
 	}
 };
 class Key : public Item {
@@ -121,15 +121,15 @@ public:
 	Key(std::string id,const std::string& name, const std::string& description, int value, ItemType type = ItemType::KEY) : Item(id, name, description, value, type) {}
 	bool isStackable() const override { return true; }
 	int maxStackSize() const override { return 99; }
-	std::shared_ptr<Item> clone() const override {
-		return std::make_shared<Key>(*this);
+	std::unique_ptr<Item> clone() const override {
+		return std::make_unique<Key>(*this);
 	}
 };
 //Not to be confused with the Key class. KeyItems are items that are necessary for story progression, such as quest items.
 class KeyItem : public Item {
 public:
 	KeyItem(std::string id, const std::string& name, const std::string& description, int value = 0, ItemType type = ItemType::KEYITEM) : Item(id, name, description, value, type) {}
-	std::shared_ptr<Item> clone() const override {
-		return std::make_shared<KeyItem>(*this);
+	std::unique_ptr<Item> clone() const override {
+		return std::make_unique<KeyItem>(*this);
 	}
 };

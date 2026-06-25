@@ -7,7 +7,6 @@
 #include <utility>
 
 class ItemDatabase;
-class Item;
 
 enum class InventorySortMode {
 	NAME,
@@ -24,9 +23,8 @@ class Inventory {
 private:
 	std::map<std::string, int> stacks;
 	const ItemDatabase& database;
-
 public:
-	Inventory(ItemDatabase& database) : database(database) {}
+	explicit Inventory(const ItemDatabase& db) : database(db) {};
 	~Inventory() = default;
 	Inventory(const Inventory&) = default;
 	Inventory(Inventory&&) = default;
@@ -40,15 +38,10 @@ public:
 		return !(*this == other);
 	}
 
-	bool addItem(std::string& itemID, int quantity = 1);
+	bool addItem(const std::string& itemID, int quantity = 1);
 	bool removeItem(const std::string& itemID, int quantity = 1);
 	int getQuantity(const std::string& itemID) const;
 
-	const std::map<std::string, int> getStacks() { return stacks; }
-	const std::string getItemName(const std::string& itemID);
-	const ItemType getItemType(const std::string& itemID);//Maybe not needed
-	const int getItemValue(const std::string& itemID);
-
+	const std::map<std::string, int>& getStacks() const { return stacks; }
 	std::vector<InventoryEntry> getSortedItems(InventorySortMode mode, bool ascending = true) const;
-	std::shared_ptr<Item> getItem(const std::string& itemID);
 };

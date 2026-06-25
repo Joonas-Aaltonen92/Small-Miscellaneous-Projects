@@ -3,17 +3,15 @@
 #include "Item.h"
 #include "ItemDatabase.h"
 
-bool Inventory::addItem(std::string& itemID, int quantity) {
+bool Inventory::addItem(const std::string& itemID, int quantity) {
 	const auto& item = database.getPrototype(itemID);
 	if (!item) {
 		std::println("Item not found: {}", itemID);
 		return false;
 	}
-	if (item->isStackable()) {
-		stacks[itemID] += quantity;
-		return true;
-	}
-	return false;
+	
+	stacks[itemID] += quantity;
+	return true;
 }
 
 bool Inventory::removeItem(const std::string& itemID, int quantity) {
@@ -35,74 +33,49 @@ int Inventory::getQuantity(const std::string& itemID) const {
 	return 0;
 }
 
-std::string Inventory::getItemName(std::string& itemID) {
-	const auto& item = database.getPrototype(itemID);
-	if (!item) {
-		std::println("Item not found: {}",itemID);
-		return "Unkown";
-	}
-	return item->getName();
-}
-
-ItemType Inventory::getItemType(std::string& itemID) {
-	const auto& item = database.getPrototype(itemID);
-	if (!item) {
-		std::println("Item not found: {}", itemID);
-		return ItemType::UNKNOWN;
-	}
-	return item->getType();
-}
-
-int Inventory::getItemValue(std::string& itemID) {
-	const auto& item = database.getPrototype(itemID);
-	if (!item) {
-		std::println("Item not found: {}", itemID);
-		return 0;
-	}
-	return item->getValue();
-}
-
 std::vector<InventoryEntry> Inventory::getSortedItems(InventorySortMode mode, bool ascending) const {
-	std::vector<InventoryEntry> items(
-		stacks.begin(),
-		stacks.end()
-	);
+	struct SortedItemView {
+		std::string id;
+		int quantity;
+		const Item* item;
+	};
 
-	std::sort(items.begin(), items.end(), [this, mode, ascending](const auto& a, const auto& b) {
-		const auto& itemA = database.getPrototype(a.first);
-		const auto& itemB = database.getPrototype(b.first);
+	std::vector<SortedItemView> items;
+	items.reserve(stacks.size());
 
-		if (!itemA || !itemB)
+	for (const auto& [id, qty] : stacks) {
+		items.push_back({ id,qty,database.getPrototype(id) });
+	}
+
+	std::sort(items.begin(), items.end(), [mode, ascending](const auto& a, const auto& b) {
+
+		if (!a.item || !b.item)
 			return false;
 
 		switch (mode) {
 		case(InventorySortMode::NAME):
 			return ascending
-				? itemA->getName() < itemB->getName()
-				: itemA->getName() > itemB->getName();
+				? a.item->getName() < b.item->getName()
+				: a.item->getName() > b.item->getName();
 
 		case (InventorySortMode::VALUE):
 			return ascending
-				? itemA->getValue() < itemB->getValue()
-				: itemA->getValue() > itemB->getValue();
+				? a.item->getValue() < b.item->getValue()
+				: a.item->getValue() > b.item->getValue();
 
 		case(InventorySortMode::TYPE):
 			return ascending
-				? itemA->getType() < itemB->getType()
-				: itemA->getType() > itemB->getType();
-
-		default:
-			return false;
+				? a.item->getType() < b.item->getType()
+				: a.item->getType() > b.item->getType();
 		}
+		return false;
 		});
-	return items;
-}
 
-std::shared_ptr<Item> Inventory::getItem(const std::string& itemID){
-	const auto& item = database.getPrototype(itemID);
-	if(item)
-		return item->clone();
+	std::vector<InventoryEntry> result;
+	result.reserve(items.size());
+	for (const auto& i : items) {
+		result.emplace_back(i.id, i.quantity);
+	}
 
-	std::println("Item not found: {}", itemID);
-	return nullptr;
+	return result;
 }
