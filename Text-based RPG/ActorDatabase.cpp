@@ -1,3 +1,5 @@
+#include <fstream>
+#include <iostream>
 #include "ActorDatabase.h"
 #include "Actor.h"
 
@@ -41,4 +43,50 @@ std::unique_ptr<Actor> ActorDatabase::createActorFromJson(const std::string& id,
 		
 	}
 	return nullptr;
+}
+
+bool ActorDatabase::loadFromJson(const std::string& filename) {
+	std::ifstream file(filename);
+	if (!file) {
+		std::cerr << "Could not open file: " << filename << std::endl;
+		return false;
+	}
+
+	nlohmann::json jsonData;
+	try {
+		file >> jsonData;
+	}
+	catch(const std::exception& e){
+		std::cerr << "Error occured while parsing JSON file: " << e.what() << std::endl;
+		return false;
+	}
+
+	_prototypes.reserve(jsonData.size());
+	for (auto& [id, data] : jsonData.items()) {
+		try {
+			auto actor = createActorFromJson(id, data);
+			if (actor) {
+				_prototypes[id] = std::move(actor);
+				std::println("Loaded actor: {}, ({}).",id, _prototypes[id]->getName());
+			}
+		}
+		catch (const std::exception& e) {
+			std::cerr << "Error loading actor '" << id << "': " << e.what() << std::endl;
+		}
+	}
+	std::println("Loaded {} actors.", _prototypes.size());
+	return true;
+}
+
+std::unique_ptr<Actor> ActorDatabase::createActor(const std::string& actorID) const {
+	auto it = _prototypes.find(actorID);
+	if (it != _prototypes.end()) {
+		return it->second->clone();
+	}
+	return nullptr;
+}
+
+const Actor* ActorDatabase::getPrototype(const std::string& actorID) const {
+	auto it = _prototypes.find(actorID);
+	return it != _prototypes.end() ? it->second.get() : nullptr;
 }

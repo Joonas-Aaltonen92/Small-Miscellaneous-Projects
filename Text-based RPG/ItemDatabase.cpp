@@ -1,3 +1,5 @@
+#include <fstream>
+#include <iostream>
 #include "ItemDatabase.h"
 
 namespace {

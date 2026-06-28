@@ -39,7 +39,7 @@ public:
 		return !(*this == other);
 	}
 
-	std::string GetName() const { return _name; }
+	std::string getName() const { return _name; }
 
 	virtual std::unique_ptr<Actor> clone() const = 0;
 };
@@ -58,7 +58,7 @@ public:
 	std::unique_ptr<Actor> clone() const override {
 		return std::make_unique<NPC>(*this);
 	}
-	std::vector<std::string> GetDialogue() const { return _dialogue; }
+	std::vector<std::string> getDialogue() const { return _dialogue; }
 };
 
 class Merchant : public Actor {
@@ -66,7 +66,7 @@ private:
 	Inventory _inventory;
 public:
 	Merchant(std::string id, const std::string& name, const std::string description, Inventory inventory) : Actor(id, name, description), _inventory(inventory) {}
-	Inventory GetInventory() const { return _inventory; }
+	Inventory getInventory() const { return _inventory; }
 	std::unique_ptr<Actor> clone() const override {
 		return std::make_unique<Merchant>(*this);
 	}
@@ -81,12 +81,13 @@ public:
 	std::unique_ptr<Actor> clone() const override {
 		return std::make_unique<Container>(*this);
 	}
-	Inventory& GetInventory() { return _inventory; }
-	const Inventory& GetInventory() const { return _inventory; }
+	Inventory& getInventory() { return _inventory; }
+	const Inventory& getInventory() const { return _inventory; }
 
-	void open() {
-		std::println("You open {} and find:", _name);
-		for (const auto& stack : _inventory.getStacks())
-			std::println("- {} x{}", _inventory.getItemName(stack.first), stack.second);
-	}
+	//Move this to Game.h
+	//void open() {
+	//	std::println("You open {} and find:", _name);
+	//	for (const auto& stack : _inventory.getStacks())
+	//		std::println("- {} x{}", _inventory.getItemName(stack.first), stack.second);
+	//}
 };
