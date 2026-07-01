@@ -1,6 +1,9 @@
+#include <cstddef>
+#include <cstdint>
 #include <array>
-#include <unordered_map>
-#include <string>
+
+inline constexpr size_t COMBAT_STAT_COUNT = 11;
+inline constexpr size_t GROWTH_STAT_COUNT = 9;
 
 //Enum 1: Combat stats
 enum class CombatStat : uint8_t{
@@ -26,17 +29,18 @@ enum class GrowthStat : uint8_t {
 	RESOLVE,		//Magical defense growth
 	AGILITY,		//Speed growth
 	FATE,			//Luck growth
+	UNKNOWN,
 	COUNT
 };
 
 struct ActorStats {
-	std::array<int, (size_t)CombatStat::COUNT> baseStats{};
-	std::array<float, (size_t)GrowthStat::COUNT> growthRates{};
+	std::array<int, COMBAT_STAT_COUNT> baseStats{};
+	std::array<float, GROWTH_STAT_COUNT> growthRates{};
 };
 
 struct StatModifiers {
-	std::array<int, (size_t)CombatStat::COUNT> flatModifiers{};
-	std::array<float, (size_t)CombatStat::COUNT> multipliers{};
+	std::array<int, COMBAT_STAT_COUNT> flatModifiers{};
+	std::array<float, COMBAT_STAT_COUNT> multipliers{};
 
 	StatModifiers() {
 		flatModifiers.fill(0);

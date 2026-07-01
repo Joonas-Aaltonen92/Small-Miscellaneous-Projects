@@ -12,6 +12,7 @@ class Player;
 class Enemy;
 class Container;
 class Equipment;
+class ItemDatabase;
 
 class Actor{
 protected:
@@ -65,7 +66,7 @@ class Merchant : public Actor {
 private:
 	Inventory _inventory;
 public:
-	Merchant(std::string id, const std::string& name, const std::string description, Inventory inventory) : Actor(id, name, description), _inventory(inventory) {}
+	Merchant(std::string id, const std::string& name, const std::string description, ItemDatabase& database) : Actor(id, name, description), _inventory(database) {}
 	Inventory getInventory() const { return _inventory; }
 	std::unique_ptr<Actor> clone() const override {
 		return std::make_unique<Merchant>(*this);
@@ -77,7 +78,7 @@ class Container : public Actor {
 private:
 		Inventory _inventory;
 public:
-	Container(std::string id, const std::string& name, const std::string description, Inventory inventory) : Actor(id, name, description), _inventory(inventory) {}
+	Container(std::string id, const std::string& name, const std::string description, ItemDatabase& database) : Actor(id, name, description), _inventory(database) {}
 	std::unique_ptr<Actor> clone() const override {
 		return std::make_unique<Container>(*this);
 	}

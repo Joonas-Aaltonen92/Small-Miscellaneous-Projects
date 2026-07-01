@@ -1,5 +1,7 @@
 #include <string>
 #include <print>
+#include <memory>
+#include <typeinfo>
 #include "Stats.h"
 
 enum class ItemType : int {
