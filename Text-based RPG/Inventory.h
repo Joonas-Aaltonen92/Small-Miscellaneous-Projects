@@ -1,10 +1,7 @@
 #pragma once
 #include <string>
 #include <map>
-#include <algorithm>
-#include <memory>
 #include <vector>
-#include <utility>
 
 class ItemDatabase;
 

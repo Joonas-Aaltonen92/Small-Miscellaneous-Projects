@@ -1,6 +1,82 @@
-#include "Stats.h"
+#include "ItemDatabase.h"
 
-CombatStat test = CombatStat::HP;
+namespace {
+	StatModifiers parseStatModifiers(const nlohmann::json& jsonMods) {
+		StatModifiers mods;
+		//Setting defaults so that there battle logic has valid data to work with and no garbage.
+		mods.flatModifiers.fill(0);
+		mods.multipliers.fill(1.0f);
+		if (!jsonMods.is_object())
+			return mods;
+		//Parse flat modifiers
+		if (jsonMods.contains("flat") && jsonMods["flat"].is_object()) {
+			auto& flat = jsonMods["flat"];
+			for (auto& [key, value] : flat.items()) {
+				CombatStat stat = getCombatStatFromString(key);
+				if (stat != CombatStat::UNKNOWN && stat != CombatStat::COUNT) {
+					mods.flatModifiers[std::to_underlying(stat)] = value.get<int>();
+				}
+			}
+		}
+		//Parse multipliers
+		if (jsonMods.contains("multipliers") && jsonMods["multipliers"].is_object()) {
+			auto& multipliers = jsonMods["multipliers"];
+			for (auto& [key, value] : multipliers.items()) {
+				CombatStat stat = getCombatStatFromString(key);
+				if (stat != CombatStat::UNKNOWN && stat != CombatStat::COUNT) {
+					mods.multipliers[(size_t)stat] = value.get<float>();
+				}
+			}
+		}
+		return mods;
+	}
+
+	ItemType getItemTypeFromString(const std::string& type) {
+		static const std::unordered_map<std::string, ItemType> stringToItemTypeMap = {
+			{"equipment", ItemType::EQUIPMENT},
+			{"consumable", ItemType::CONSUMABLE},
+			{"trinket", ItemType::TRINKET},
+			{"key", ItemType::KEY},
+			{"keyitem", ItemType::KEYITEM},
+			{"unknown", ItemType::UNKNOWN}
+		};
+		auto it = stringToItemTypeMap.find(type);
+		return it != stringToItemTypeMap.end() ? it->second : ItemType::UNKNOWN;
+	}
+
+	EquipmentSlot getEquipmentSlotFromString(const std::string& slot) {
+		static const std::unordered_map<std::string, EquipmentSlot> stringToEquipmentSlotMap = {
+			{"head", EquipmentSlot::HEAD},
+			{"chest", EquipmentSlot::CHEST},
+			{"waist", EquipmentSlot::WAIST},
+			{"legs", EquipmentSlot::LEGS},
+			{"feet", EquipmentSlot::FEET},
+			{"arms", EquipmentSlot::ARMS},
+			{"hand", EquipmentSlot::HAND},
+			{"ring", EquipmentSlot::RING},
+			{"amulet", EquipmentSlot::AMULET}
+		};
+		auto it = stringToEquipmentSlotMap.find(slot);
+		return it != stringToEquipmentSlotMap.end() ? it->second : EquipmentSlot::HEAD;//Just a default for now
+	}
+
+	CombatStat getCombatStatFromString(const std::string& stat) {
+		static const std::unordered_map<std::string, CombatStat> stringToCombatStatMap = {
+			{"hp", CombatStat::HP},
+			{"maxhp", CombatStat::MAXHP},
+			{"mp", CombatStat::MP},
+			{"maxmp", CombatStat::MAXMP},
+			{"power", CombatStat::POWER},
+			{"fortitude", CombatStat::FORTITUDE},
+			{"sorcery", CombatStat::SORCERY},
+			{"willpower", CombatStat::WILLPOWER},
+			{"speed", CombatStat::SPEED},
+			{"luck", CombatStat::LUCK}
+		};
+		auto it = stringToCombatStatMap.find(stat);
+		return it != stringToCombatStatMap.end() ? it->second : CombatStat::HP; //Default to HP for now
+	}
+}
 
 //#include "Stats.h"
 //#include "ItemDatabase.h"
