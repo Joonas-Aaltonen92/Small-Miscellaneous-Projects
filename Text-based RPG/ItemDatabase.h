@@ -2,7 +2,6 @@
 #include <unordered_map>
 #include <string>
 #include "ItemDefinition.h"
-#include <json.hpp> //nlohmann/json library
 
 class ItemDatabase {
 private:

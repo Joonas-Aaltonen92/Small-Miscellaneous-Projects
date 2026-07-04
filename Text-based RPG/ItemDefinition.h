@@ -23,6 +23,7 @@ enum class EquipmentSlot {
 	HAND,
 	RING,
 	AMULET,
+	UNKNOWN,
 	COUNT
 };
 
