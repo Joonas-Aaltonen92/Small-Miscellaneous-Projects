@@ -7,7 +7,7 @@ enum class ItemType {
 	EQUIPMENT,
 	CONSUMABLE,//Food and potions and such
 	TRINKET, //Just for selling
-	KEYITEM,//Important things like quest items
+	KEYITEM,//Important things like quest items. Not to be confused with key
 	KEY,//Normal keys/items that open doors and chests
 	UNKNOWN,//Undefined. Basically for errors and such
 	COUNT

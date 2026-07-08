@@ -122,6 +122,7 @@ bool ItemDatabase::loadFromJson(const std::string& filename) {
 
 		_items[id] = item;
 	}
+	std::cout << "Loaded " << _items.size() << " items from " << filename << std::endl;
 	return true;
 }
 

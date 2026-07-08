@@ -4,7 +4,6 @@
 #include <unordered_map>
 #include "Stats.h"
 
-
 struct NPCDefinition {
 	std::string id;
 	std::string name;
@@ -17,23 +16,22 @@ struct ContainerDefinition {
 	std::string name;
 	std::string description;
 	std::vector<std::string> items; // List of item IDs contained in the container
-	bool isLocked = false;
-	bool isOpened = false;//Opened containers are removed from the game (state needs to be saved in the rooms.json)
-	std::vector<std::string> keyIds; //IDs for all keys that can open a the container (iron key, lock pick, master key, etc.)
+	std::vector<std::string> keys; //IDs for all keys that can open a the container (iron key, lock pick, master key, etc.)
+	[[nodiscard]] bool isOpen() const { return !items.empty(); } //If container requires no key to open, it's considered open
 };
 
 struct DoorDefinition {
 	std::string id;
 	std::string name;
 	std::string description;
-	std::vector<std::string> keyIds; //IDs for all keys that can open the door (iron key, lock pick, master key, etc.)
+	std::vector<std::string> keys; //IDs for all keys that can open the door (iron key, lock pick, master key, etc.)
 };
 
 struct MerchantDefinition {
 	std::string id;
 	std::string name;
 	std::string description;
-	std::vector<std::string> itemsForSale; // List of item IDs that the merchant sells
+	std::vector<std::string> stock; // List of item IDs that the merchant sells
 };
 
 struct EnemyDefinition {

@@ -68,27 +68,184 @@ namespace {
 	}
 }
 
-bool ActorDatabase::loadFromJson(const std::string& filename) {
-	std::ifstream file(filename);
+bool ActorDatabase::loadNPCFromJson(const std::string& fileName) {
+	std::ifstream file(fileName);
 	if (!file) {
-		std::cerr << "Could not open file: " << filename << std::endl;
+		std::cerr << "Could not open NPC JSON file: " << fileName << std::endl;
 		return false;
 	}
 	nlohmann::json jsonData;
 	try {
 		file >> jsonData;
 	}
-	catch(const std::exception& e) {
-		std::cerr << "Error reading JSON file: " << e.what() << std::endl;
+	catch (const std::exception& e) {
+		std::cerr << "Error reading NPC JSON file: " << e.what() << std::endl;
 		return false;
 	}
 
+	_npcs.reserve(jsonData.size());
+	for (const auto& [id, definition] : jsonData.items()) {
+		NPCDefinition npc;
+		npc.id = id;
+		npc.name = definition.value("name", "");
+		npc.description = definition.value("description", "");
+		if (definition.contains("dialogue") && definition["dialogue"].is_array()) {//Every NPC should have dialogue, but checking just in case
+			for (const auto& line : definition["dialogue"]) {
+				npc.dialogue.push_back(line.get<std::string>());
+			}
+		}
+		else//NPC did not have dialogue. Not an error, but print a notification to write it in the JSON file
+			std::cout << "WARNING: NPC (" << id << ") has no dialogue. Fix the JSON, plz.\n";
+		_npcs[id] = npc;
+	}
+	std::cout << "Loaded " << _npcs.size() << " NPCs from " << fileName << std::endl;
+	return true;
+}
 
+bool ActorDatabase::loadContainerFromJson(const std::string& filename)
+{
+	std::fstream file(filename);
+	if (!file) {
+		std::cerr << "Could not open Container JSON file: " << filename << std::endl;
+		return false;
+	}
+	nlohmann::json jsonData;
+	try {
+		file >> jsonData;
+	}
+	catch (const std::exception& e) {
+		std::cerr << "Error reading Container JSON file: " << e.what() << std::endl;
+		return false;
+	}
+
+	_containers.reserve(jsonData.size());
+	for (const auto& [id, definition] : jsonData.items()) {
+		ContainerDefinition container;
+		container.id = id;
+		container.name = definition.value("name", "");
+		container.description = definition.value("description", "");
+		if (definition.contains("items") && definition["items"].is_array()) {//Should contain items, but checking just in case
+			for (const auto& itemId : definition["items"]) {
+				container.items.push_back(itemId.get<std::string>());
+			}
+		}
+		else//No items found, making the container redundant
+			std::cout << "WARNING: Container (" << id << ") contains no items. Fix the JSON, plz.\n";
+		if(definition.contains("keys") && definition["keys"].is_array()) {
+			for (const auto& keyId : definition["keys"]) {
+				container.keyIds.push_back(keyId.get<std::string>());
+			}
+		}
+		_containers[id] = container;
+	}
+	std::cout << "Loaded " << _containers.size() << " Containers from " << filename << std::endl;
+	return true;
+}
+
+bool ActorDatabase::loadDoorFromJson(const std::string& filename){
+	std::fstream file(filename);
+	if (!file) {
+		std::cerr << "Could not open Door JSON file: " << filename << std::endl;
+		return false;
+	}
+	nlohmann::json jsonData;
+	try {
+		file >> jsonData;
+	}
+	catch (const std::exception& e) {
+		std::cerr << "Error reading Door JSON file: " << e.what() << std::endl;
+		return false;
+	}
+
+	_doors.reserve(jsonData.size());
+	for (const auto& [id, definition] : jsonData.items()) {
+		DoorDefinition door;
+		door.id = id;
+		door.name = definition.value("name", "");
+		door.description = definition.value("description", "");
+		if (definition.contains("keys") && definition["keys"].is_array()) {//Should have keys because open doors are redundant
+			for (const auto& keyId : definition["keys"]) {
+				door.keyIds.push_back(keyId.get<std::string>());
+			}
+		}
+		else//Door is open by default, making it redundant
+			std::cout << "WARNING: Door (" << id << ") requires no keys, thus making it redundant. Either remove door from JSON, or add keys, plz.\n";
+		_doors[id] = door;
+	}
+	std::cout << "Loaded " << _doors.size() << " Doors from " << filename << std::endl;
+	return true;
+}
+
+bool ActorDatabase::loadMerchantFromJson(const std::string& filename) {
+	std::fstream file(filename);
+	if (!file) {
+		std::cerr << "Could not open Merchant JSON file: " << filename << std::endl;
+		return false;
+	}
+	nlohmann::json jsonData;
+	try {
+		file >> jsonData;
+	}
+	catch (const std::exception& e) {
+		std::cerr << "Could not read from Merchant JSON file: " << e.what() << std::endl;
+		return false;
+	}
+
+	_merchants.reserve(jsonData.size());
+	for (const auto& [id, definition] : jsonData.items()) {
+		MerchantDefinition merchant;
+		merchant.id = id;
+		merchant.name = definition.value("name", "");
+		merchant.description = definition.value("description", "");
+		if (definition.contains("stock") && definition["stock"].is_array()) {
+			for (const auto& itemId : definition["stock"]) {
+				merchant.itemsForSale.push_back(itemId.get<std::string>());
+			}
+		}
+		else
+			std::cout << "WARNING: Merchant (" << id << ") has no items to sell. Fix the JSON, plz.\n";
+		_merchants[id] = merchant;
+	}
+	std::cout << "Loaded " << _merchants.size() << " Merchants from file: " << filename << std::endl;
+	return true;
+}
+
+bool ActorDatabase::loadEnemyFromJson(const std::string& filename) {
+	std::fstream file(filename);
+	if (!file) {
+		std::cerr << "Could not open Enemy JSON file: " << filename << std::endl;
+		return false;
+	}
+	nlohmann::json jsonData;
+	try {
+		file >> jsonData;
+	}
+	catch (const std::exception& e) {
+		std::cerr << "Could not read Enemy JSON file: " << filename << std::endl;
+		return false;
+	}
+	_enemies.reserve(jsonData.size());
+	for (const auto& [id, definition] : jsonData.items()) {
+		EnemyDefinition enemy;
+		enemy.id = id;
+		enemy.name = definition.value("name", "");
+		enemy.description = definition.value("description", "");
+		enemy.stats = parseActorStats(definition.value("stats",nlohmann::json()));
+		if (definition.contains("loot") && definition["loot"].is_object()) {
+			for (const auto& [itemId, quantity] : definition["loot"].items()) {
+				enemy.lootTable[itemId] = quantity.get<int>();
+			}
+		}
+		_enemies[id] = enemy;
+	}
+
+	std::cout << "Loaded " << _enemies.size() << " Enemies from file: " << filename << std::endl;
+	return true;
 }
 
 const NPCDefinition* ActorDatabase::findNPC(const std::string& id) const {
-	auto it = _NPCs.find(id);
-	return it != _NPCs.end() ? &it->second : nullptr;
+	auto it = _npcs.find(id);
+	return it != _npcs.end() ? &it->second : nullptr;
 }
 
 const ContainerDefinition* ActorDatabase::findContainer(const std::string& id) const {
