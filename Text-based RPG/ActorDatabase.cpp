@@ -79,7 +79,7 @@ bool ActorDatabase::loadNPCFromJson(const std::string& fileName) {
 		file >> jsonData;
 	}
 	catch (const std::exception& e) {
-		std::cerr << "Error reading NPC JSON file: " << e.what() << std::endl;
+		std::cerr << "Error occured while parsing NPC JSON file: " << e.what() << std::endl;
 		return false;
 	}
 
@@ -114,7 +114,7 @@ bool ActorDatabase::loadContainerFromJson(const std::string& filename)
 		file >> jsonData;
 	}
 	catch (const std::exception& e) {
-		std::cerr << "Error reading Container JSON file: " << e.what() << std::endl;
+		std::cerr << "Error occured while parsing JSON file: " << e.what() << std::endl;
 		return false;
 	}
 
@@ -133,7 +133,7 @@ bool ActorDatabase::loadContainerFromJson(const std::string& filename)
 			std::cout << "WARNING: Container (" << id << ") contains no items. Fix the JSON, plz.\n";
 		if(definition.contains("keys") && definition["keys"].is_array()) {
 			for (const auto& keyId : definition["keys"]) {
-				container.keyIds.push_back(keyId.get<std::string>());
+				container.keys.push_back(keyId.get<std::string>());
 			}
 		}
 		_containers[id] = container;
@@ -153,7 +153,7 @@ bool ActorDatabase::loadDoorFromJson(const std::string& filename){
 		file >> jsonData;
 	}
 	catch (const std::exception& e) {
-		std::cerr << "Error reading Door JSON file: " << e.what() << std::endl;
+		std::cerr << "Error occured while parsing Door JSON file: " << e.what() << std::endl;
 		return false;
 	}
 
@@ -165,7 +165,7 @@ bool ActorDatabase::loadDoorFromJson(const std::string& filename){
 		door.description = definition.value("description", "");
 		if (definition.contains("keys") && definition["keys"].is_array()) {//Should have keys because open doors are redundant
 			for (const auto& keyId : definition["keys"]) {
-				door.keyIds.push_back(keyId.get<std::string>());
+				door.keys.push_back(keyId.get<std::string>());
 			}
 		}
 		else//Door is open by default, making it redundant
@@ -187,7 +187,7 @@ bool ActorDatabase::loadMerchantFromJson(const std::string& filename) {
 		file >> jsonData;
 	}
 	catch (const std::exception& e) {
-		std::cerr << "Could not read from Merchant JSON file: " << e.what() << std::endl;
+		std::cerr << "Error occured while parsing Merchant JSON file: " << e.what() << std::endl;
 		return false;
 	}
 
@@ -199,7 +199,7 @@ bool ActorDatabase::loadMerchantFromJson(const std::string& filename) {
 		merchant.description = definition.value("description", "");
 		if (definition.contains("stock") && definition["stock"].is_array()) {
 			for (const auto& itemId : definition["stock"]) {
-				merchant.itemsForSale.push_back(itemId.get<std::string>());
+				merchant.stock.push_back(itemId.get<std::string>());
 			}
 		}
 		else
@@ -221,7 +221,7 @@ bool ActorDatabase::loadEnemyFromJson(const std::string& filename) {
 		file >> jsonData;
 	}
 	catch (const std::exception& e) {
-		std::cerr << "Could not read Enemy JSON file: " << filename << std::endl;
+		std::cerr << "Error occured while parsing Enemy JSON file: " << filename << std::endl;
 		return false;
 	}
 	_enemies.reserve(jsonData.size());

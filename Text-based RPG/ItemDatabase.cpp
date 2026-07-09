@@ -75,7 +75,7 @@ namespace {
 			for (auto& [key, value] : multipliers.items()) {
 				CombatStat stat = getCombatStatFromString(key);
 				if (stat != CombatStat::UNKNOWN && stat != CombatStat::COUNT) {
-					mods.multipliers[(size_t)stat] = value.get<float>();
+					mods.multipliers[std::to_underlying(stat)] = value.get<float>();
 				}
 			}
 		}
@@ -113,7 +113,7 @@ bool ItemDatabase::loadFromJson(const std::string& filename) {
 		item.stackable = definition.value("stackable", false);
 		item.maxStackSize = definition.value("maxStackSize", 1);
 
-		if (definition.contains("slotCosts")) {
+		if (definition.contains("slotCosts") && definition["slotCosts"].is_object()) {
 			for (const auto& [slotName, cost] : definition["slotCosts"].items()) {
 				EquipmentSlot slot = getEquipmentSlotFromString(slotName);
 				item.slotCosts[slot] = cost;
