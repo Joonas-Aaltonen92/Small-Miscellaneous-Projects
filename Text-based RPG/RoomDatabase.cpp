@@ -44,12 +44,7 @@ bool RoomDatabase::loadFromJson(const std::string& filename) {
 		room.description = definition.value("description","");
 		room.minorDescription = definition.value("minorDescription", "");
 		room.safeZone = definition.value("safe", true);
-
-		if (definition.contains("actors") && definition["actors"].is_array()) {
-			for (const auto& actorId : definition["actors"]) {
-				room.actors.push_back(actorId.get<std::string>());
-			}
-		}
+		
 		if (definition.contains("exits") && definition["exits"].is_array()) {
 			for (const auto& [exitString, connectedRoom] : definition["exits"].items()) {
 				Exits exit = getExitFromString(exitString);
@@ -60,16 +55,38 @@ bool RoomDatabase::loadFromJson(const std::string& filename) {
 			std::cout << "WARNING: No exits found for Room (" << id << "), check JSON just in case.\n";
 		}
 
+		if (definition.contains("npcs") && definition["actors"].is_array()) {
+			for (const auto& actorId : definition["actors"]) {
+				room.npcs.push_back(actorId.get<std::string>());
+			}
+		}
+		if (definition.contains("containers") && definition["actors"].is_array()) {
+			for (const auto& actorId : definition["actors"]) {
+				room.containers.push_back(actorId.get<std::string>());
+			}
+		}
+		if (definition.contains("doors") && definition["actors"].is_array()) {
+			for (const auto& actorId : definition["actors"]) {
+				room.doors.push_back(actorId.get<std::string>());
+			}
+		}
+		if (definition.contains("merchants") && definition["actors"].is_array()) {
+			for (const auto& actorId : definition["actors"]) {
+				room.merchants.push_back(actorId.get<std::string>());
+			}
+		}
+		if (definition.contains("enemies") && definition["actors"].is_array()) {
+			for (const auto& actorId : definition["actors"]) {
+				room.enemies.push_back(actorId.get<std::string>());
+			}
+		}
+
 		if (definition.contains("loot") && definition["loot"].is_object()) {
 			for (const auto& [id, quantity] : definition["loot"].items()) {
 				room.loot[id] = quantity.get<int>();
 			}
 		}
 	}
-}
-
-bool RoomDatabase::saveToJson(const std::string& filename) {
-
 }
 
 const RoomDefinition* RoomDatabase::find(const std::string& id) const {
