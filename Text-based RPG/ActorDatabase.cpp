@@ -124,9 +124,9 @@ bool ActorDatabase::loadContainerFromJson(const std::string& filename)
 		container.id = id;
 		container.name = definition.value("name", "");
 		container.description = definition.value("description", "");
-		if (definition.contains("items") && definition["items"].is_array()) {//Should contain items, but checking just in case
-			for (const auto& itemId : definition["items"]) {
-				container.items.push_back(itemId.get<std::string>());
+		if (definition.contains("items") && definition["items"].is_object()) {//Should contain items, but checking just in case
+			for (const auto& [itemId, quantity] : definition["items"].items()) {
+				container.items[itemId] = quantity.get<int>();
 			}
 		}
 		else//No items found, making the container redundant

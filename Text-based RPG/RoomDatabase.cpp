@@ -87,6 +87,8 @@ bool RoomDatabase::loadFromJson(const std::string& filename) {
 			}
 		}
 	}
+	std::cout << "Loaded " << _rooms.size() << " Rooms from file " << filename << std::endl;
+	return true;
 }
 
 const RoomDefinition* RoomDatabase::find(const std::string& id) const {

@@ -3,16 +3,26 @@
 #include "ActorDatabase.h"
 #include "ItemDatabase.h"
 #include "RoomDatabase.h"
-#include "Player.h"
 
 class Game {
 private:
-	Player _player;
 	ActorDatabase _actorDatabase;
 	ItemDatabase _itemDatabase;
 	RoomDatabase _roomDatabase;
 public:
-	Game(const std::string playerName);
-	void Run();
+	void newGame() {};
+	void run() {}
+
+	void loadGame(const std::string& filename) {}
+	void saveGame(const std::string& filename) {}
+
+	void mainMenuSelect(char c) {
+		if (c == '1') {
+			newGame();
+		}
+		if (c == '2') {
+			loadGame("save.json");
+		}
+	}
 };
 
