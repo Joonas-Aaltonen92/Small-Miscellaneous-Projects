@@ -96,7 +96,7 @@ bool ItemDatabase::loadFromJson(const std::string& filename) {
 		file >> jsonData;
 	}
 	catch (const std::exception& e) {
-		std::cerr << "Error occured while parsing JSON file: " << e.what() << std::endl;
+		std::cerr << "Error occured while parsing Item JSON file: " << e.what() << std::endl;
 		return false;
 	}
 

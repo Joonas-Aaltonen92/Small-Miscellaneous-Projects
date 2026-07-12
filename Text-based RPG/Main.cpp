@@ -8,6 +8,7 @@
 int main()
 {
 	Game rpg;
+	rpg.loadDatabases();
 
     std::cout << "-------------MAIN MENU-------------\n";
 	std::cout << "1) NEW GAME\n";

@@ -16,6 +16,13 @@ public:
 	bool loadDoorFromJson(const std::string& fileName);
 	bool loadMerchantFromJson(const std::string& fileName);
 	bool loadEnemyFromJson(const std::string& fileName);
+	void loadActors() {
+		loadNPCFromJson("npcs.json");
+		loadContainerFromJson("containers.json");
+		loadDoorFromJson("doors.json");
+		loadMerchantFromJson("merchants.json");
+		loadEnemyFromJson("enemies.json");
+	}
 
 	const NPCDefinition* findNPC(const std::string& id) const;
 	const ContainerDefinition* findContainer(const std::string& id) const;

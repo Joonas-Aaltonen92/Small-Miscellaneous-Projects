@@ -39,6 +39,8 @@ struct EnemyDefinition {
 	std::string name;
 	std::string description;
 
+	int baseExpYield = 0;
+
 	ActorStats stats;
 
 	std::unordered_map<std::string, int> lootTable; // List of item IDs that the enemy can drop

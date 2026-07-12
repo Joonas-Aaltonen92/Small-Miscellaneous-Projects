@@ -1,0 +1,12 @@
+{
+	"peasant_tim":{
+		"name":"Tim the Peasant",
+		"description":"A man in ragged clothes and a dull look on his face.",
+		"dialogue":["Hullo there, mister!", "Can you help find my shoes? A rat stole them and scurried down to the sewers."]
+	},
+	"skeleton_jim":{
+		"name":"Skeleton Jim",
+		"description":"A skeleton, but it doesn't look hostile...",
+		"dialogue":["BOOOO!!", "Haha! Just kidding, mate. Did I scare ya?", "Listen, I dropped my mace in here somewhere. You can keep it if you find it."]
+	}
+}

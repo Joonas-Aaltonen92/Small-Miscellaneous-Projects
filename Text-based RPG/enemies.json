@@ -1,0 +1,65 @@
+{
+	"skeleton":{
+		"name":"Skeleton",
+		"description":"A reanimated pile of bones.",
+		"expYield":1,
+		"stats":{
+			"combatStat":{
+				"hp":10,
+				"mp":0,
+				"power":5,
+				"fortitude":4,
+				"sorcery":1,
+				"willpower":1,
+				"speed":2,
+				"luck":1
+			},
+			"growthStat":{
+				"vitality":1.6,
+				"wisdom":1.0,
+				"strength":1.5,
+				"endurance":1.3,
+				"intelligence":1.0,
+				"resolve":1.0,
+				"agility":1.4,
+				"fate":1.05
+			}
+		},
+		"loot":{
+			"bone":95,
+			"iron_sword":5
+		}
+	},
+	"rat":{
+		"type":"enemy",
+		"name":"Sewer Rat",
+		"description":"Nasty little bugger.",
+		"expYield":1,
+		"stats":{
+			"combatStat":{
+				"hp":5,
+				"mp":0,
+				"power":1,
+				"fortitude":1,
+				"sorcery":1,
+				"willpower":1,
+				"speed":5,
+				"luck":1
+			},
+			"growthStat":{
+				"vitality":1.2,
+				"wisdom":1.0,
+				"strength":1.1,
+				"endurance":1.2,
+				"intelligence":1.0,
+				"resolve":1.0,
+				"agility":1.4,
+				"fate":1.0
+			}
+		},
+		"loot":{
+			"rat_tail":50,
+			"cheese":5
+		}
+	}
+}

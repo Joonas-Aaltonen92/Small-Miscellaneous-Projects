@@ -45,7 +45,7 @@ bool RoomDatabase::loadFromJson(const std::string& filename) {
 		room.minorDescription = definition.value("minorDescription", "");
 		room.safeZone = definition.value("safe", true);
 		
-		if (definition.contains("exits") && definition["exits"].is_array()) {
+		if (definition.contains("exits") && definition["exits"].is_object()) {
 			for (const auto& [exitString, connectedRoom] : definition["exits"].items()) {
 				Exits exit = getExitFromString(exitString);
 				room.exits[exit] = connectedRoom.get<std::string>();
@@ -86,6 +86,7 @@ bool RoomDatabase::loadFromJson(const std::string& filename) {
 				room.loot[id] = quantity.get<int>();
 			}
 		}
+		_rooms[id] = room;
 	}
 	std::cout << "Loaded " << _rooms.size() << " Rooms from file " << filename << std::endl;
 	return true;

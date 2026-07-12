@@ -114,7 +114,7 @@ bool ActorDatabase::loadContainerFromJson(const std::string& filename)
 		file >> jsonData;
 	}
 	catch (const std::exception& e) {
-		std::cerr << "Error occured while parsing JSON file: " << e.what() << std::endl;
+		std::cerr << "Error occured while parsing Container JSON file: " << e.what() << std::endl;
 		return false;
 	}
 
@@ -221,7 +221,7 @@ bool ActorDatabase::loadEnemyFromJson(const std::string& filename) {
 		file >> jsonData;
 	}
 	catch (const std::exception& e) {
-		std::cerr << "Error occured while parsing Enemy JSON file: " << filename << std::endl;
+		std::cerr << "Error occured while parsing Enemy JSON file: " << e.what() << std::endl;
 		return false;
 	}
 	_enemies.reserve(jsonData.size());
@@ -230,6 +230,7 @@ bool ActorDatabase::loadEnemyFromJson(const std::string& filename) {
 		enemy.id = id;
 		enemy.name = definition.value("name", "");
 		enemy.description = definition.value("description", "");
+		enemy.baseExpYield = definition.value("expYield", 0);
 		enemy.stats = parseActorStats(definition.value("stats",nlohmann::json()));
 		if (definition.contains("loot") && definition["loot"].is_object()) {
 			for (const auto& [itemId, quantity] : definition["loot"].items()) {

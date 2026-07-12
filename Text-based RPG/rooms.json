@@ -1,5 +1,15 @@
 {
-	"id": "",
-	"description": "Starting area",
-	"dungeon": 0,
+	"town_square_01":{
+		"name":"Oakvale's Town Square",
+		"description": "The town square of a small but busy town of Oakvale.",
+		"minorDescription":"an open area with a small well in the middle.",
+		"safe": true,
+		"exits":{
+			"north":"main_street_01",
+			"south":"town_gate_01",
+			"east":"commercial_district_01",
+			"west":"residential_area_01"
+		},
+		"npcs":["old_woman_01"]
+	}
 }

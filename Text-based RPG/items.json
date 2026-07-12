@@ -2,64 +2,121 @@
 	"ration":{
 		"type": "consumable",
 		"name": "Rations",
-		"description": "Some food for the road. Restores 10 HP."
+		"description": "Some food for the road. Restores 10 HP.",
 		"value": 10,
-		"statModifiers":{
+		"stackable":true,
+		"maxStackSize":99,
+		"modifiers":{
 			"flat":{
-				"HP": 10
+				"hp": 10
 			}
 		}
-	}
+	},
 	"potion":{
 		"type": "consumable",
 		"name": "Health Potion",
-		"description": "Restores 25 HP."
+		"description": "Restores 25 HP.",
 		"value": 20,
-		"statModifiers":{
+		"stackable":true,
+		"maxStackSize":99,
+		"modifiers":{
 			"flat":{
-				"HP": 25
+				"hp": 25
 			}
 		}
-	}
+	},
 	"iron_sword_rusty":{
-		"type": "weapon",
+		"type": "equipment",
 		"name": "Rusty Iron Sword",
 		"description": "An old sword that has seen better days.",
 		"value": 2,
-		"equipSlot": "hand",
-		"statModifiers":{
+		"stackable":false,
+		"maxStackSize":1,
+		"slotCosts":{
+			"hand":1
+		},
+		"modifiers":{
 			"flat":{
 				"power": 2,
-				"defense": 1,
+				"foritude": 1,
 				"speed": -2
 			}
 		}
-	}
-		"leather_cap":{
+	},
+	"leather_cap":{
 		"type": "equipment",
 		"name": "Leather Cap",
 		"description": "A cap made of leather. Offers little protection.",
 		"value": 5,
-		"equipSlot": "head",
-		"statModifiers":{
+		"stackable":false,
+		"maxStackSize":1,
+		"slotCosts":{
+			"head":1
+		},
+		"modifiers":{
 			"flat":{
-				"defense": 2
+				"foritude": 2
 			}
 		}
-	}
-		"iron_sword":{
-		"type": "weapon",
+	},
+	"iron_sword":{
+		"type": "equipment",
 		"name": "Iron Sword",
 		"description": "A sword made of iron.",
 		"value": 5,
-		"equipSlot": "hand",
-		"statModifiers":{
+		"slotCosts":{
+			"hand":1
+		},
+		"stackable":false,
+		"maxStackSize":1,
+		"modifiers":{
 			"flat":{
 				"power": 5,
-				"defense": 2,
+				"foritude": 2,
 				"speed": -2
 			}
 		}
-	}		
+	},
+	"iron_halberd":{
+		"type": "equipment",
+		"name": "Iron Halberd",
+		"description": "The weapon of choice for all based individuals.",
+		"value": 10,
+		"slotCosts":{
+			"hand":2
+		},
+		"stackable":false,
+		"maxStackSize":1,
+		"modifiers":{
+			"flat":{
+				"power": 12,
+				"foritude": 5,
+				"speed": -4
+			}
+		}
+	},
+	"sneaking_suit":{
+		"type": "equipment",
+		"name": "Tactical Sneaking Suit",
+		"description": "A neaking suit suitable for all terrains and all purposes.",
+		"value": 100,
+		"slotCosts":{
+			"head":1,
+			"chest":1,
+			"waist":1,
+			"arms":1,
+			"legs":1,
+			"feet":1
+		},
+		"stackable":false,
+		"maxStackSize":1,
+		"modifiers":{
+			"flat":{
+				"power": 1,
+				"foritude": 2,
+				"speed": 20
+			}
+		}
+	}
 }
 		
