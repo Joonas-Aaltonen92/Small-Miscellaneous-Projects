@@ -3,12 +3,15 @@
 #include "ActorDatabase.h"
 #include "ItemDatabase.h"
 #include "RoomDatabase.h"
+#include "GameState.h"
 
 class Game {
 private:
 	ActorDatabase _actorDatabase;
 	ItemDatabase _itemDatabase;
 	RoomDatabase _roomDatabase;
+
+	GameState _gameState;
 public:
 	void newGame() {};
 	void run() {}

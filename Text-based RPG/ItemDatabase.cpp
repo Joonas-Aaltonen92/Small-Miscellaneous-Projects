@@ -116,7 +116,7 @@ bool ItemDatabase::loadFromJson(const std::string& filename) {
 		if (definition.contains("slotCosts") && definition["slotCosts"].is_object()) {
 			for (const auto& [slotName, cost] : definition["slotCosts"].items()) {
 				EquipmentSlot slot = getEquipmentSlotFromString(slotName);
-				item.slotCosts[slot] = cost;
+				item.slotCosts[slot] = cost.get<int>();
 			}
 		}
 

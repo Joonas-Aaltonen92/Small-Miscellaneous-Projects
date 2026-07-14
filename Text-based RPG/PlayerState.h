@@ -8,8 +8,10 @@
 
 struct PlayerState {
 	std::string name;
+	std::string classId;
 
 	int level = 1;
+	int skillPoints = 0;
 	int experience = 0;
 	int gold = 0;
 	int walletSize = 99;
