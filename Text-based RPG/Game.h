@@ -16,8 +16,8 @@ public:
 	void newGame() {};
 	void run() {}
 
-	void loadGame(const std::string& filename) {}
-	void saveGame(const std::string& filename) {}
+	bool loadGame(const std::string& filename);
+	bool saveGame(const std::string& filename);
 
 	void mainMenuSelect(char c) {
 		if (c == '1') {
