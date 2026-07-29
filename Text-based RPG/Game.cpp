@@ -1,8 +1,11 @@
+#include <fstream>
+#include <iostream>
+#include <vector>
 #include "Game.h"
 #include "json.hpp"
 
 namespace {
-	std::string equipmentSlotToString(const EquipmentSlot& slot) {
+	std::string equipmentSlotToString(EquipmentSlot slot) {
 		switch (slot) {
 			case EquipmentSlot::HEAD: return "head";
 			case EquipmentSlot::CHEST: return "chest";
@@ -47,7 +50,29 @@ namespace {
 		jsonData["walletSize"] = player.walletSize;
 		jsonData["inventory"] = player.inventory;
 		jsonData["stats"] = serializeActorStats(player.stats);
-		jsonData["equipment"] = serializeEquipment(player.equipped);
+		jsonData["equipped"] = serializeEquipment(player.equipped);
+
+		return jsonData;
+	}
+
+	nlohmann::json serializeRoomState(const RoomState& room) {
+		nlohmann::json jsonData;
+
+		jsonData["visited"] = room.visited;
+
+		jsonData["deadEnemies"] = room.deadEnemies;
+		jsonData["emptyContainers"] = room.emptiedContainers;
+		jsonData["openedDoors"] = room.openedDoors;
+		jsonData["departedNPCs"] = room.departedNPCs;
+		jsonData["departedMerchants"] = room.departedMerchants;
+		jsonData["itemsPickedUp"] = room.itemsPickedUp;
+
+		jsonData["spawnedEnemies"] = room.spawnedEnemies;
+		jsonData["spawnedContainers"] = room.spawnedContainers;
+		jsonData["spawnedDoors"] = room.spawnedDoors;
+		jsonData["spawnedNPCs"] = room.spawnedNPCs;
+		jsonData["spawnedMerchants"] = room.spawnedMerchants;
+		jsonData["spawnedItems"] = room.spawnedItems;
 
 		return jsonData;
 	}
@@ -65,16 +90,22 @@ namespace {
 			{"amulet", EquipmentSlot::AMULET},
 			{"unknown", EquipmentSlot::UNKNOWN}
 		};
-		auto it = stringToEquipmentSlotMap.find(str);
+		const auto it = stringToEquipmentSlotMap.find(str);
 		return it != stringToEquipmentSlotMap.end() ? it->second : EquipmentSlot::UNKNOWN;
 	}
+
 	std::unordered_map<EquipmentSlot, std::vector<std::string>> deserializeEquipment(const nlohmann::json& jsonData) {
-		if (jsonData.contains("equipment")) {
-			for (const auto& [slotName, items] : jsonData.items()) {
-				EquipmentSlot slot = stringToEquipmentSlot(slotName);
-				
-			}
+		std::unordered_map<EquipmentSlot, std::vector<std::string>> equipment;
+		
+		for (const auto& [slotName, items] : jsonData.items()) {
+			EquipmentSlot slot = stringToEquipmentSlot(slotName);
+			if (slot == EquipmentSlot::UNKNOWN)
+				continue;
+
+			equipment.emplace(slot, items.get<std::vector<std::string>>());
 		}
+
+		return equipment;
 	}
 
 	ActorStats deserializeActorStats(const nlohmann::json& jsonData) {
@@ -112,50 +143,35 @@ namespace {
 		return player;
 	}
 
-	nlohmann::json serializeRoomState(const RoomState& room) {
-		nlohmann::json jsonData;
 
-		jsonData["visited"] = room.visited;
+	std::unordered_map < std::string, RoomState> deserializeRoomStates(const nlohmann::json& jsonData) {
+		
+		std::unordered_map<std::string, RoomState> rooms;
+		rooms.reserve(jsonData.size());
 
-		jsonData["deadEnemies"] = room.deadEnemies;
-		jsonData["emptiedContainers"] = room.emptiedContainers;
-		jsonData["openedDoors"] = room.openedDoors;
-		jsonData["departedNPCs"] = room.departedNPCs;
-		jsonData["departedMerchants"] = room.departedMerchants;
-		jsonData["itemsPickedup"] = room.itemsPickedUp;
+		for (const auto& [id, definition] : jsonData.items()) {
+			RoomState room;
+			
+			room.visited = definition.value("visited", false);
+			
+			room.deadEnemies = definition.value("deadEnemies", std::unordered_set<std::string>{});
+			room.emptiedContainers = definition.value("emptyContainers", std::unordered_set<std::string>{});
+			room.departedNPCs = definition.value("departedNPCs", std::unordered_set<std::string>{});
+			room.departedMerchants = definition.value("departedMerchants", std::unordered_set<std::string>{});
+			room.openedDoors = definition.value("openedDoors", std::unordered_set<std::string>{});
+			room.itemsPickedUp = definition.value("itemsPickedUp", std::unordered_map<std::string, int>{});
+			
+			room.spawnedEnemies = definition.value("spawnedEnemies", std::unordered_set<std::string>{});
+			room.spawnedContainers = definition.value("spawnedContainers", std::unordered_set<std::string>{});
+			room.spawnedDoors = definition.value("spawnedDoors", std::unordered_set<std::string>{});
+			room.spawnedNPCs = definition.value("spawnedNPCs", std::unordered_set<std::string>{});
+			room.spawnedMerchants = definition.value("spawnedMerchants", std::unordered_set<std::string>{});
+			room.spawnedItems = definition.value("spawnedItems", std::unordered_map<std::string,int>{});
 
-		jsonData["spawnedEnemies"] = room.spawnedEnemies;
-		jsonData["spawnedContainers"] = room.spawnedContainers;
-		jsonData["spawnedDoors"] = room.spawnedDoors;
-		jsonData["spawnedNPCs"] = room.spawnedNPCs;
-		jsonData["spawnedMerchants"] = room.spawnedMerchants;
-		jsonData["spawnedItems"] = room.spawnedItems;
-
-		return jsonData;
+			rooms.emplace(id,std::move(room));
+		}
+		return rooms;
 	}
-
-	RoomState deserializeRoomState(const nlohmann::json& jsonData) {
-		RoomState room;
-
-		room.visited = jsonData.value("visited", false);
-
-		room.deadEnemies = jsonData.value("deadEnemies", std::unordered_set<std::string>{});
-		room.emptiedContainers = jsonData.value("emptyContainers", std::unordered_set<std::string>{});
-		room.departedNPCs = jsonData.value("departedNPCs", std::unordered_set<std::string>{});
-		room.departedMerchants = jsonData.value("departedMerchants", std::unordered_set<std::string>{});
-		room.openedDoors = jsonData.value("openedDoors", std::unordered_set<std::string>{});
-		room.itemsPickedUp = jsonData.value("itemsPickedup", std::unordered_map<std::string, int>{});
-
-		room.spawnedEnemies = jsonData.value("spawnedEnemies", std::unordered_set<std::string>{});
-		room.spawnedContainers = jsonData.value("spawnedContainers", std::unordered_set<std::string>{});
-		room.spawnedDoors = jsonData.value("spawnedDoors", std::unordered_set<std::string>{});
-		room.spawnedNPCs = jsonData.value("spawnedNPCs", std::unordered_set<std::string>{});
-		room.spawnedMerchants = jsonData.value("spawnedMerchants", std::unordered_set<std::string>{});
-		room.spawnedItems = jsonData.value("spawnedItems", std::unordered_map<std::string,int>{});
-
-		return room;
-	}
-
 }
 
 void Game::loadDatabases() {
@@ -165,9 +181,44 @@ void Game::loadDatabases() {
 }
 
 bool Game::saveGame(const std::string& filename) {
-	
+	nlohmann::json root;
+
+	root["player"] = serializePlayer(_gameState.player);
+	for (const auto& [id, room] : _gameState.rooms) {
+		root["rooms"][id] = serializeRoomState(room);
+	}
+
+	std::ofstream file(filename);
+
+	if (!file) {
+		std::cerr << "Could not open file for saving: " << filename << std::endl;
+		return false;
+	}
+
+	file << root.dump(4);
+
+	return true;
 }
 
 bool Game::loadGame(const std::string& filename) {
+	std::ifstream file(filename);
+	if (!file) {
+		std::cerr << "Could not open file: " << filename << std::endl;
+		return false;
+	}
 
+	nlohmann::json jsonData;
+
+	try {
+		file >> jsonData;
+	}
+	catch (const std::exception& e) {
+		std::cerr << "Error occured while parsing save file: " << e.what() << std::endl;
+		return false;
+	}
+
+	_gameState.player = deserializePlayerState(jsonData["player"]);
+	_gameState.rooms = deserializeRoomStates(jsonData["rooms"]);
+
+	return true;
 }

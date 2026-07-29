@@ -16,7 +16,7 @@ namespace {
 			{"none", Exits::NONE},
 			{"unknown",Exits::UNKNOWN}
 		};
-		auto it = stringToExitMap.find(exit);
+		const auto it = stringToExitMap.find(exit);
 		return it != stringToExitMap.end() ? it->second : Exits::UNKNOWN;
 	}
 }

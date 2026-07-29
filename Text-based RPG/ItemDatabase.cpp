@@ -14,7 +14,7 @@ namespace {
 			{"keyitem", ItemType::KEYITEM},
 			{"unknown", ItemType::UNKNOWN}
 		};
-		auto it = stringToItemTypeMap.find(type);
+		const auto it = stringToItemTypeMap.find(type);
 		return it != stringToItemTypeMap.end() ? it->second : ItemType::UNKNOWN;
 	}
 
@@ -31,7 +31,7 @@ namespace {
 			{"amulet", EquipmentSlot::AMULET},
 			{"unknown", EquipmentSlot::UNKNOWN}
 		};
-		auto it = stringToEquipmentSlotMap.find(slot);
+		const auto it = stringToEquipmentSlotMap.find(slot);
 		return it != stringToEquipmentSlotMap.end() ? it->second : EquipmentSlot::UNKNOWN;
 	}
 
@@ -48,7 +48,7 @@ namespace {
 			{"speed", CombatStat::SPEED},
 			{"luck", CombatStat::LUCK}
 		};
-		auto it = stringToCombatStatMap.find(stat);
+		const auto it = stringToCombatStatMap.find(stat);
 		return it != stringToCombatStatMap.end() ? it->second : CombatStat::UNKNOWN;
 	}
 

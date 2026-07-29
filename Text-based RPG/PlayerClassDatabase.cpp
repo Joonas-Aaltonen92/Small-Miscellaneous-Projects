@@ -18,7 +18,7 @@ namespace {
 			{"luck", CombatStat::LUCK},
 			{"unknown", CombatStat::UNKNOWN}
 		};
-		auto it = stringToCombatStatMap.find(stat);
+		const auto it = stringToCombatStatMap.find(stat);
 		return it != stringToCombatStatMap.end() ? it->second : CombatStat::UNKNOWN;
 	}
 
@@ -34,7 +34,7 @@ namespace {
 			{"fate", GrowthStat::FATE},
 			{"unknown", GrowthStat::UNKNOWN}
 		};
-		auto it = stringToGrowthStatMap.find(stat);
+		const auto it = stringToGrowthStatMap.find(stat);
 		return it != stringToGrowthStatMap.end() ? it->second : GrowthStat::UNKNOWN;
 	}
 	ActorStats parseActorStats(const nlohmann::json& jsonStats) {
