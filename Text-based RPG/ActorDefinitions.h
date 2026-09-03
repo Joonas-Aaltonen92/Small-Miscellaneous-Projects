@@ -17,7 +17,7 @@ struct ContainerDefinition {
 	std::string description;
 	std::unordered_map<std::string, int> items; // List of item IDs contained in the container
 	std::vector<std::string> keys; //IDs for all keys that can open a the container (iron key, lock pick, master key, etc.)
-	[[nodiscard]] bool isOpen() const { return !items.empty(); } //If container requires no key to open, it's considered open
+	[[nodiscard]] bool isUnlocked() const { return keys.empty(); } //If container requires no key to open, it's considered open
 };
 
 struct DoorDefinition {

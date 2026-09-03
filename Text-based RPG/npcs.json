@@ -1,12 +1,111 @@
 {
-	"peasant_tim":{
-		"name":"Tim the Peasant",
-		"description":"A man in ragged clothes and a dull look on his face.",
-		"dialogue":["Hullo there, mister!", "Can you help find my shoes? A rat stole them and scurried down to the sewers."]
-	},
-	"skeleton_jim":{
-		"name":"Skeleton Jim",
-		"description":"A skeleton, but it doesn't look hostile...",
-		"dialogue":["BOOOO!!", "Haha! Just kidding, mate. Did I scare ya?", "Listen, I dropped my mace in here somewhere. You can keep it if you find it."]
-	}
+  "old_woman_01": {
+    "name": "Old Woman",
+    "description": "An elderly woman leaning on a wooden cane. She watches everyone who passes through the square with sharp, suspicious eyes.",
+    "dialogue": [
+      "Lovely day, isn't it?",
+      "Well... it would be, if people would stop tracking mud through my street.",
+      "If you're looking for work, try the commercial district. Someone there is always looking for an extra pair of hands."
+    ]
+  },
+
+  "peasant_tim": {
+    "name": "Tim the Peasant",
+    "description": "A man in ragged clothes and a dull look on his face.",
+    "dialogue": [
+      "Hullo there, mister!",
+      "Can you help find my shoes? A rat stole them and scurried down to the sewers.",
+      "I know it sounds silly, but those were my best shoes!"
+    ]
+  },
+
+  "skeleton_jim": {
+    "name": "Skeleton Jim",
+    "description": "A skeleton, but it doesn't look hostile...",
+    "dialogue": [
+      "BOOOO!!",
+      "Haha! Just kidding, mate. Did I scare ya?",
+      "Listen, I dropped my mace in here somewhere. You can keep it if you find it."
+    ]
+  },
+
+  "guard_aldric": {
+    "name": "Guard Aldric",
+    "description": "A tired-looking town guard standing at attention, although his hand rests suspiciously close to a lunch pouch.",
+    "dialogue": [
+      "Keep your weapons sheathed in town.",
+      "Oakvale's quiet enough most days. Let's keep it that way.",
+      "If you're heading outside the walls, be careful. The roads aren't as safe as they used to be."
+    ]
+  },
+
+  "guard_mira": {
+    "name": "Guard Mira",
+    "description": "A young town guard with polished armor and an expression that suggests she has heard every excuse imaginable.",
+    "dialogue": [
+      "Morning.",
+      "The south gate is open during the day. Don't wander off after dark unless you know what you're doing.",
+      "And no, 'I didn't know' is not a valid excuse for breaking town rules."
+    ]
+  },
+
+  "blacksmith_garrick": {
+    "name": "Garrick the Blacksmith",
+    "description": "A broad-shouldered blacksmith with soot-covered arms and a perpetually singed apron.",
+    "dialogue": [
+      "Need something sharpened?",
+      "Iron's reliable. Ugly, heavy, and reliable.",
+      "If you find any decent scrap outside town, bring it to me. I'll make something useful out of it."
+    ]
+  },
+
+  "innkeeper_elsa": {
+    "name": "Elsa the Innkeeper",
+    "description": "A cheerful woman standing behind the inn's wooden counter, keeping one eye on the guests and another on the kitchen.",
+    "dialogue": [
+      "Welcome to Oakvale!",
+      "A warm bed fixes most problems. The rest usually require a warm meal.",
+      "If you're travelling north, stock up before you leave. The road gets lonely."
+    ]
+  },
+
+  "miller_jonas": {
+    "name": "Jonas the Miller",
+    "description": "A middle-aged man covered in flour, with a permanent squint from years of staring at his mill.",
+    "dialogue": [
+      "Morning. Try not to breathe too deeply around here.",
+      "Flour gets everywhere. Absolutely everywhere.",
+      "The old sewer entrance is farther east than most people realize. Best not to go poking around down there."
+    ]
+  },
+
+  "apprentice_lina": {
+    "name": "Lina the Apprentice",
+    "description": "A young apprentice carrying an armful of books and looking like she has forgotten where she put half of them.",
+    "dialogue": [
+      "Oh! Sorry. Was I standing in your way?",
+      "I'm studying old records about Oakvale.",
+      "Apparently there's something underneath the town that is much older than the town itself. Fascinating, right?"
+    ]
+  },
+
+  "priest_benedict": {
+    "name": "Brother Benedict",
+    "description": "A calm priest wearing simple robes and carrying a small wooden symbol around his neck.",
+    "dialogue": [
+      "Peace be with you, traveller.",
+      "Oakvale may be small, but there is good in its people.",
+      "If you venture into dark places, remember that courage is not the absence of fear."
+    ]
+  },
+
+  "sewer_keeper_hob": {
+    "name": "Hob the Sewer Keeper",
+    "description": "A grumpy old man holding a lantern and a large iron key ring.",
+    "dialogue": [
+      "Don't touch anything down there.",
+      "Actually, scratch that. Don't touch MOST things down there.",
+      "Rats have gotten bolder lately. Something's been stirring them up."
+    ]
+  }
 }

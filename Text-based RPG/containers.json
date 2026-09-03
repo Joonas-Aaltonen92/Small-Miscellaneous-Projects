@@ -1,19 +1,47 @@
 {
-	"small_wooden_chest_01":{
-		"name":"Small Wooden Chest",
-		"description":"A small wooden chest.",
-		"items":{
-			"gold":5,
-			"iron_sword":1
-		},
-		"keys":["small_key,lock_pick,master_key"]
-	},
-	"leather_pouch":{
-		"name":"Leather Pouch",
-		"description":"A small pouch made of leather.",
-		"items":{
-			"small_pearl":3,
-			"loaded_die":1
-		}
-	}
+  "small_wooden_chest_warehouse_01": {
+    "name": "Small Wooden Chest",
+    "description": "A small wooden chest covered in dust.",
+    "items": {
+      "gold": 5,
+      "iron_sword": 1
+    },
+    "keys": [
+      "small_key",
+      "lock_pick",
+      "master_key"
+    ]
+  },
+
+  "small_wooden_chest_crypt_01": {
+    "name": "Ancient Wooden Chest",
+    "description": "A small chest that has somehow survived years beneath the town.",
+    "items": {
+      "gold": 10,
+      "iron_shield": 1
+    },
+    "keys": [
+      "small_key",
+      "lock_pick",
+      "master_key"
+    ]
+  },
+
+  "leather_pouch_01": {
+    "name": "Leather Pouch",
+    "description": "A small pouch made of leather.",
+    "items": {
+      "small_pearl": 3,
+      "loaded_die": 1
+    }
+  },
+
+  "leather_pouch_02": {
+    "name": "Dusty Leather Pouch",
+    "description": "An old leather pouch hidden among the ruins.",
+    "items": {
+      "small_pearl": 2,
+      "gold": 8
+    }
+  }
 }

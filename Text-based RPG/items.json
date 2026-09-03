@@ -1,122 +1,175 @@
 {
-	"ration":{
-		"type": "consumable",
-		"name": "Rations",
-		"description": "Some food for the road. Restores 10 HP.",
-		"value": 10,
-		"stackable":true,
-		"maxStackSize":99,
-		"modifiers":{
-			"flat":{
-				"hp": 10
-			}
-		}
-	},
-	"potion":{
-		"type": "consumable",
-		"name": "Health Potion",
-		"description": "Restores 25 HP.",
-		"value": 20,
-		"stackable":true,
-		"maxStackSize":99,
-		"modifiers":{
-			"flat":{
-				"hp": 25
-			}
-		}
-	},
-	"iron_sword_rusty":{
-		"type": "equipment",
-		"name": "Rusty Iron Sword",
-		"description": "An old sword that has seen better days.",
-		"value": 2,
-		"stackable":false,
-		"maxStackSize":1,
-		"slotCosts":{
-			"hand":1
-		},
-		"modifiers":{
-			"flat":{
-				"power": 2,
-				"foritude": 1,
-				"speed": -2
-			}
-		}
-	},
-	"leather_cap":{
-		"type": "equipment",
-		"name": "Leather Cap",
-		"description": "A cap made of leather. Offers little protection.",
-		"value": 5,
-		"stackable":false,
-		"maxStackSize":1,
-		"slotCosts":{
-			"head":1
-		},
-		"modifiers":{
-			"flat":{
-				"foritude": 2
-			}
-		}
-	},
-	"iron_sword":{
-		"type": "equipment",
-		"name": "Iron Sword",
-		"description": "A sword made of iron.",
-		"value": 5,
-		"slotCosts":{
-			"hand":1
-		},
-		"stackable":false,
-		"maxStackSize":1,
-		"modifiers":{
-			"flat":{
-				"power": 5,
-				"foritude": 2,
-				"speed": -2
-			}
-		}
-	},
-	"iron_halberd":{
-		"type": "equipment",
-		"name": "Iron Halberd",
-		"description": "The weapon of choice for all based individuals.",
-		"value": 10,
-		"slotCosts":{
-			"hand":2
-		},
-		"stackable":false,
-		"maxStackSize":1,
-		"modifiers":{
-			"flat":{
-				"power": 12,
-				"foritude": 5,
-				"speed": -4
-			}
-		}
-	},
-	"sneaking_suit":{
-		"type": "equipment",
-		"name": "Tactical Sneaking Suit",
-		"description": "A neaking suit suitable for all terrains and all purposes.",
-		"value": 100,
-		"slotCosts":{
-			"head":1,
-			"chest":1,
-			"waist":1,
-			"arms":1,
-			"legs":1,
-			"feet":1
-		},
-		"stackable":false,
-		"maxStackSize":1,
-		"modifiers":{
-			"flat":{
-				"power": 1,
-				"foritude": 2,
-				"speed": 20
-			}
-		}
-	}
+  "iron_shield": {
+    "type": "equipment",
+    "name": "Iron Shield",
+    "description": "A sturdy iron shield. Heavy, but dependable.",
+    "value": 8,
+    "slotCosts": {
+      "hand": 1
+    },
+    "stackable": false,
+    "maxStackSize": 1,
+    "modifiers": {
+      "flat": {
+        "power": 1,
+        "fortitude": 6,
+        "speed": -2
+      }
+    }
+  },
+
+  "iron_dagger": {
+    "type": "equipment",
+    "name": "Iron Dagger",
+    "description": "A short iron blade that is quick and easy to handle.",
+    "value": 4,
+    "slotCosts": {
+      "hand": 1
+    },
+    "stackable": false,
+    "maxStackSize": 1,
+    "modifiers": {
+      "flat": {
+        "power": 3,
+        "fortitude": 1,
+        "speed": 2
+      }
+    }
+  },
+
+  "mana_potion": {
+    "type": "consumable",
+    "name": "Mana Potion",
+    "description": "A blue potion that restores 15 MP.",
+    "value": 25,
+    "stackable": true,
+    "maxStackSize": 99,
+    "modifiers": {
+      "flat": {
+        "mp": 15
+      }
+    }
+  },
+
+  "antidote": {
+    "type": "consumable",
+    "name": "Antidote",
+    "description": "A bitter herbal mixture used to cure poison.",
+    "value": 15,
+    "stackable": true,
+    "maxStackSize": 99,
+    "modifiers": {
+      "flat": {}
+    }
+  },
+
+  "bone": {
+    "type": "trinket",
+    "name": "Bone",
+    "description": "A rather ordinary bone. Probably best not to think too hard about where it came from.",
+    "value": 1,
+    "stackable": true,
+    "maxStackSize": 99,
+    "modifiers": {
+      "flat": {}
+    }
+  },
+
+  "rat_tail": {
+    "type": "trinket",
+    "name": "Rat Tail",
+    "description": "The tail of a sewer rat. Not particularly pleasant, but someone might pay for it.",
+    "value": 2,
+    "stackable": true,
+    "maxStackSize": 99,
+    "modifiers": {
+      "flat": {}
+    }
+  },
+
+  "cheese": {
+    "type": "consumable",
+    "name": "Cheese",
+    "description": "A slightly questionable piece of cheese. Restores 5 HP.",
+    "value": 3,
+    "stackable": true,
+    "maxStackSize": 99,
+    "modifiers": {
+      "flat": {
+        "hp": 5
+      }
+    }
+  },
+
+  "small_pearl": {
+    "type": "trinket",
+    "name": "Small Pearl",
+    "description": "A small pearl with a faint sheen. It might fetch a decent price.",
+    "value": 12,
+    "stackable": true,
+    "maxStackSize": 99,
+    "modifiers": {
+      "flat": {}
+    }
+  },
+
+  "loaded_die": {
+    "type": "trinket",
+    "name": "Loaded Die",
+    "description": "A suspiciously weighted die. Probably best not to ask too many questions about it.",
+    "value": 8,
+    "stackable": true,
+    "maxStackSize": 99,
+    "modifiers": {
+      "flat": {}
+    }
+  },
+
+  "small_key": {
+    "type": "key",
+    "name": "Small Key",
+    "description": "A small iron key suitable for simple locks.",
+    "value": 2,
+    "stackable": true,
+    "maxStackSize": 10,
+    "modifiers": {
+      "flat": {}
+    }
+  },
+
+  "lock_pick": {
+    "type": "key",
+    "name": "Lock Pick",
+    "description": "A simple tool for opening certain locks.",
+    "value": 5,
+    "stackable": true,
+    "maxStackSize": 10,
+    "modifiers": {
+      "flat": {}
+    }
+  },
+
+  "master_key": {
+    "type": "key",
+    "name": "Master Key",
+    "description": "An unusual key capable of opening many ordinary locks.",
+    "value": 50,
+    "stackable": false,
+    "maxStackSize": 1,
+    "modifiers": {
+      "flat": {}
+    }
+  },
+
+  "silver_key": {
+    "type": "key",
+    "name": "Silver Key",
+    "description": "An ornate silver key bearing an unfamiliar crest.",
+    "value": 25,
+    "stackable": false,
+    "maxStackSize": 1,
+    "modifiers": {
+      "flat": {}
+    }
+  }
 }
-		

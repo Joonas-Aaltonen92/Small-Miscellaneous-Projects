@@ -1,12 +1,22 @@
 {
-	"blacksmith:01":{
-		"name":"Blacksmith",
-		"description":"The blacksmith.",
-		"stock":["iron_sword", "iron_shield", "iron_dagger"]
-	},
-	"chemist":{
-		"name":"Chemist",
-		"description":"A chemist's shop.",
-		"stock":["potion", "mana_potion", "antidote"]
-	}
+  "blacksmith:01": {
+    "name": "Blacksmith",
+    "description": "The blacksmith.",
+    "stock": [
+      "iron_sword",
+      "iron_shield",
+      "iron_dagger",
+      "iron_halberd"
+    ]
+  },
+
+  "chemist": {
+    "name": "Chemist",
+    "description": "A chemist's shop.",
+    "stock": [
+      "potion",
+      "mana_potion",
+      "antidote"
+    ]
+  }
 }

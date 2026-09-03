@@ -1,0 +1,134 @@
+{
+  "warrior": {
+    "classId": "warrior",
+    "className": "Warrior",
+    "classDescription": "A sturdy fighter trained to endure punishment and deal powerful physical blows.",
+    "startingInventory": {
+      "ration": 5,
+      "iron_sword": 1,
+      "iron_shield": 1
+    },
+    "baseStats": {
+      "combatStat": {
+        "hp": 30,
+        "mp": 5,
+        "power": 8,
+        "fortitude": 7,
+        "sorcery": 1,
+        "willpower": 3,
+        "speed": 3,
+        "luck": 2
+      },
+      "growthStat": {
+        "vitality": 2.0,
+        "wisdom": 1.0,
+        "strength": 1.8,
+        "endurance": 1.7,
+        "intelligence": 1.0,
+        "resolve": 1.2,
+        "agility": 1.1,
+        "fate": 1.0
+      }
+    }
+  },
+
+  "rogue": {
+    "classId": "rogue",
+    "className": "Rogue",
+    "classDescription": "A fast and cunning fighter who relies on agility, speed, and opportunistic attacks.",
+    "startingInventory": {
+      "ration": 5,
+      "iron_dagger": 1,
+      "leather_cap": 1
+    },
+    "baseStats": {
+      "combatStat": {
+        "hp": 22,
+        "mp": 5,
+        "power": 6,
+        "fortitude": 3,
+        "sorcery": 1,
+        "willpower": 3,
+        "speed": 8,
+        "luck": 5
+      },
+      "growthStat": {
+        "vitality": 1.5,
+        "wisdom": 1.0,
+        "strength": 1.4,
+        "endurance": 1.2,
+        "intelligence": 1.0,
+        "resolve": 1.1,
+        "agility": 2.0,
+        "fate": 1.6
+      }
+    }
+  },
+
+  "mage": {
+    "classId": "mage",
+    "className": "Mage",
+    "classDescription": "A scholar of the arcane arts who sacrifices physical resilience for magical power.",
+    "startingInventory": {
+      "ration": 5,
+      "potion": 2,
+      "mana_potion": 2
+    },
+    "baseStats": {
+      "combatStat": {
+        "hp": 18,
+        "mp": 25,
+        "power": 2,
+        "fortitude": 2,
+        "sorcery": 9,
+        "willpower": 8,
+        "speed": 4,
+        "luck": 3
+      },
+      "growthStat": {
+        "vitality": 1.2,
+        "wisdom": 2.0,
+        "strength": 1.0,
+        "endurance": 1.0,
+        "intelligence": 2.0,
+        "resolve": 1.8,
+        "agility": 1.2,
+        "fate": 1.2
+      }
+    }
+  },
+
+  "ranger": {
+    "classId": "ranger",
+    "className": "Ranger",
+    "classDescription": "A versatile adventurer accustomed to travelling beyond civilization and surviving in hostile terrain.",
+    "startingInventory": {
+      "ration": 8,
+      "iron_dagger": 1,
+      "leather_cap": 1,
+      "potion": 1
+    },
+    "baseStats": {
+      "combatStat": {
+        "hp": 25,
+        "mp": 8,
+        "power": 6,
+        "fortitude": 4,
+        "sorcery": 2,
+        "willpower": 4,
+        "speed": 7,
+        "luck": 5
+      },
+      "growthStat": {
+        "vitality": 1.6,
+        "wisdom": 1.2,
+        "strength": 1.5,
+        "endurance": 1.3,
+        "intelligence": 1.2,
+        "resolve": 1.2,
+        "agility": 1.7,
+        "fate": 1.5
+      }
+    }
+  }
+}

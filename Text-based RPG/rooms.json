@@ -1,15 +1,245 @@
 {
-	"town_square_01":{
-		"name":"Oakvale's Town Square",
-		"description": "The town square of a small but busy town of Oakvale.",
-		"minorDescription":"an open area with a small well in the middle.",
-		"safe": true,
-		"exits":{
-			"north":"main_street_01",
-			"south":"town_gate_01",
-			"east":"commercial_district_01",
-			"west":"residential_area_01"
-		},
-		"npcs":["old_woman_01"]
-	}
+  "town_square_01": {
+    "name": "Oakvale's Town Square",
+    "description": "The town square of the small but busy town of Oakvale. Merchants, farmers, and travellers pass through here throughout the day.",
+    "minorDescription": "an open area with a small stone well in the middle.",
+    "safeZone": true,
+    "exits": {
+      "north": "main_street_01",
+      "south": "town_gate_01",
+      "east": "commercial_district_01",
+      "west": "residential_area_01"
+    },
+    "npcs": [
+      "old_woman_01",
+      "guard_aldric"
+    ],
+    "containers": [],
+    "doors": [],
+    "merchants": [],
+    "enemies": [],
+    "loot": {
+      "ration": 1
+    }
+  },
+
+  "main_street_01": {
+    "name": "Oakvale's Main Street",
+    "description": "A broad street running through the northern half of Oakvale. Small businesses and houses line both sides of the road.",
+    "minorDescription": "a busy street lined with wooden buildings.",
+    "safeZone": true,
+    "exits": {
+      "north": "north_road_01",
+      "south": "town_square_01",
+      "east": "commercial_district_01",
+      "west": "chapel_01"
+    },
+    "npcs": [
+      "innkeeper_elsa"
+    ],
+    "containers": [],
+    "doors": [],
+    "merchants": [],
+    "enemies": [],
+    "loot": {}
+  },
+
+  "commercial_district_01": {
+    "name": "Oakvale's Commercial District",
+    "description": "A crowded collection of shops, stalls, workshops, and warehouses. The smell of cooked food mixes with the smoke of nearby forges.",
+    "minorDescription": "a crowded street filled with shops and market stalls.",
+    "safeZone": true,
+    "exits": {
+      "west": "town_square_01",
+      "north": "main_street_01",
+      "east": "warehouse_lane_01"
+    },
+    "npcs": [
+      "blacksmith_garrick"
+    ],
+    "containers": [],
+    "doors": [],
+    "merchants": [],
+    "enemies": [],
+    "loot": {
+      "iron_sword_rusty": 1
+    }
+  },
+
+  "residential_area_01": {
+    "name": "Oakvale's Residential District",
+    "description": "A quieter part of town filled with modest houses, gardens, washing lines, and the occasional barking dog.",
+    "minorDescription": "a quiet neighborhood of small houses and gardens.",
+    "safeZone": true,
+    "exits": {
+      "east": "town_square_01",
+      "north": "chapel_01",
+      "south": "old_mill_01"
+    },
+    "npcs": [
+      "peasant_tim",
+      "miller_jonas"
+    ],
+    "containers": [],
+    "doors": [],
+    "merchants": [],
+    "enemies": [],
+    "loot": {}
+  },
+
+  "town_gate_01": {
+    "name": "Oakvale's South Gate",
+    "description": "A sturdy wooden gate marking the southern entrance to Oakvale. Beyond it, a dirt road stretches into the countryside.",
+    "minorDescription": "a large wooden gate leading out into the countryside.",
+    "safeZone": true,
+    "exits": {
+      "north": "town_square_01",
+      "south": "south_road_01"
+    },
+    "npcs": [
+      "guard_mira"
+    ],
+    "containers": [],
+    "doors": [],
+    "merchants": [],
+    "enemies": [],
+    "loot": {}
+  },
+
+  "chapel_01": {
+    "name": "Oakvale Chapel",
+    "description": "A small stone chapel with wooden benches and simple decorations. It is noticeably quieter than the rest of town.",
+    "minorDescription": "a small stone building with a wooden door and a quiet interior.",
+    "safeZone": true,
+    "exits": {
+      "east": "main_street_01",
+      "south": "residential_area_01"
+    },
+    "npcs": [
+      "priest_benedict",
+      "apprentice_lina"
+    ],
+    "containers": [],
+    "doors": [],
+    "merchants": [],
+    "enemies": [],
+    "loot": {
+      "potion": 1
+    }
+  },
+
+  "old_mill_01": {
+    "name": "Old Mill",
+    "description": "An aging wooden mill stands beside a narrow stream. The machinery still works, although every part of it makes a different unpleasant noise.",
+    "minorDescription": "an old wooden mill beside a shallow stream.",
+    "safeZone": true,
+    "exits": {
+      "north": "residential_area_01",
+      "east": "sewer_entrance_01"
+    },
+    "npcs": [
+      "miller_jonas"
+    ],
+    "containers": [],
+    "doors": [],
+    "merchants": [],
+    "enemies": [],
+    "loot": {
+      "ration": 2,
+      "leather_cap": 1
+    }
+  },
+
+  "sewer_entrance_01": {
+    "name": "Oakvale Sewer Entrance",
+    "description": "A damp stone passage beneath the town. The air is cold and unpleasant, and the sound of running water echoes through the tunnels.",
+    "minorDescription": "a dark stone passage descending beneath the town.",
+    "safeZone": false,
+    "exits": {
+      "west": "old_mill_01",
+      "down": "sewer_tunnel_01"
+    },
+    "npcs": [
+      "sewer_keeper_hob"
+    ],
+    "containers": [],
+    "doors": [],
+    "merchants": [],
+    "enemies": [],
+    "loot": {
+      "potion": 1,
+      "iron_sword_rusty": 1
+    }
+  },
+
+  "sewer_tunnel_01": {
+    "name": "Oakvale Sewer Tunnels",
+    "description": "A maze of narrow stone tunnels beneath Oakvale. Water trickles through channels along the walls, and something occasionally moves in the darkness.",
+    "minorDescription": "a dark tunnel disappearing beneath the town.",
+    "safeZone": false,
+    "exits": {
+      "up": "sewer_entrance_01"
+    },
+    "npcs": [
+      "skeleton_jim"
+    ],
+    "containers": [],
+    "doors": [],
+    "merchants": [],
+    "enemies": [],
+    "loot": {
+      "iron_sword": 1,
+      "ration": 1
+    }
+  },
+
+  "north_road_01": {
+    "name": "Northern Road",
+    "description": "A dirt road leading away from Oakvale toward the hills. The town walls quickly disappear behind you as the road winds through open countryside.",
+    "minorDescription": "a dirt road leading toward distant hills.",
+    "safeZone": false,
+    "exits": {
+      "south": "main_street_01"
+    },
+    "npcs": [],
+    "containers": [],
+    "doors": [],
+    "merchants": [],
+    "enemies": [],
+    "loot": {}
+  },
+
+  "south_road_01": {
+    "name": "Southern Road",
+    "description": "A well-worn road extending south from Oakvale. Wagon tracks and footprints suggest that travellers frequently use this route.",
+    "minorDescription": "a dirt road stretching south beyond the town gate.",
+    "safeZone": false,
+    "exits": {
+      "north": "town_gate_01"
+    },
+    "npcs": [],
+    "containers": [],
+    "doors": [],
+    "merchants": [],
+    "enemies": [],
+    "loot": {}
+  },
+
+  "warehouse_lane_01": {
+    "name": "Warehouse Lane",
+    "description": "A narrow lane behind Oakvale's shops. Several old warehouses stand along the road, their wooden doors reinforced with iron bands.",
+    "minorDescription": "a narrow lane lined with large wooden warehouses.",
+    "safeZone": true,
+    "exits": {
+      "west": "commercial_district_01"
+    },
+    "npcs": [],
+    "containers": [],
+    "doors": [],
+    "merchants": [],
+    "enemies": [],
+    "loot": {
+      "iron_halberd": 1
+    }
+  }
 }

@@ -2,11 +2,19 @@
 	"flimsy_door":{
 		"name":"Flimsy Wooden Door",
 		"description":"A flimsy door which looks like it will fall apart.",
-		"keys":["small_key,lock_pick,master_key"]
+		"keys":[
+			"small_key",
+			"lock_pick",
+			"master_key"
+		]
 	},
 	"throne_room_door":{
 		"name":"Throne Room Doors",
 		"description":"Large ornamental doors leading to the throne room.",
-		"keys":["silver_key,lock_pick,master_key"]
+		"keys":[
+			"silver_key",
+			"lock_pick",
+			"master_key"
+		]
 	}
 }

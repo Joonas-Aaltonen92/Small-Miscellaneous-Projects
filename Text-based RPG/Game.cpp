@@ -135,10 +135,7 @@ namespace {
 		if (jsonData.contains("inventory"))
 			player.inventory = jsonData.value("inventory", std::unordered_map<std::string, int>{});
 		if (jsonData.contains("equipped")) {
-			for (const auto& [slotName, items] : jsonData["equipped"].items()) {
-				EquipmentSlot slot = stringToEquipmentSlot(slotName);
-				player.equipped[slot] = items.get<std::vector<std::string>>();
-			}
+			player.equipped = deserializeEquipment(jsonData["equipped"]);
 		}
 		return player;
 	}
@@ -197,6 +194,11 @@ bool Game::saveGame(const std::string& filename) {
 
 	file << root.dump(4);
 
+	if (!file) {
+		std::cerr << "Could not write save file: " << filename << "\n";
+		return false;
+	}
+
 	return true;
 }
 
@@ -211,14 +213,126 @@ bool Game::loadGame(const std::string& filename) {
 
 	try {
 		file >> jsonData;
+
+		_gameState.player = deserializePlayerState(jsonData.at("player"));
+		_gameState.rooms = deserializeRoomStates(jsonData.at("rooms"));
 	}
 	catch (const std::exception& e) {
-		std::cerr << "Error occured while parsing save file: " << e.what() << std::endl;
+		std::cerr << "Error occured while loading save file: " << e.what() << std::endl;
 		return false;
 	}
 
-	_gameState.player = deserializePlayerState(jsonData["player"]);
-	_gameState.rooms = deserializeRoomStates(jsonData["rooms"]);
 
 	return true;
+}
+
+
+void Game::mainMenu()
+{
+	while (_running)
+	{
+		std::cout << "\n=== Geemu ===\n";
+		std::cout << "1. New Game\n";
+		std::cout << "2. Load Game\n";
+		std::cout << "3. Quit\n";
+		std::cout << "> ";
+
+		char input;
+		std::cin >> input;
+
+		switch (input)
+		{
+		case '1':
+			newGame();
+			if (_inGame)
+				gameLoop();
+			break;
+
+		case '2':
+			if (loadGame("save.json"))
+			{
+				_inGame = true;
+				gameLoop();
+			}
+			break;
+
+		case '3':
+			_running = false;
+			break;
+
+		default:
+			std::cout << "Invalid selection.\n";
+			break;
+		}
+	}
+}
+void Game::newGame()
+{
+	// Character creation will go here.
+	//
+	// For now, just establish a starting state.
+
+	_inGame = true;
+}
+
+void Game::gameLoop()
+{
+	while (_inGame && _running)
+	{
+		displayCurrentRoom();
+
+		std::cout << "\n> ";
+
+		char input;
+		std::cin >> input;
+
+		handleGameInput(input);
+	}
+}
+void Game::handleGameInput(char c)
+{
+	switch (c)
+	{
+	case 'n':
+		std::cout << "You go north.\n";
+		break;
+
+	case 'e':
+		std::cout << "You go east.\n";
+		break;
+
+	case 's':
+		std::cout << "You go south.\n";
+		break;
+
+	case 'w':
+		std::cout << "You go west.\n";
+		break;
+
+	case 'i':
+		std::cout << "Inventory.\n";
+		break;
+
+	case 'q':
+		_inGame = false;
+		break;
+
+	default:
+		std::cout << "Unknown command.\n";
+		break;
+	}
+}
+
+void Game::displayCurrentRoom() const
+{
+	// Once GameState has a current room ID, this can use
+	// _roomDatabase to retrieve the corresponding definition.
+
+	std::cout << "\nYou are in Oakvale.\n";
+}
+
+void Game::run()
+{
+	loadDatabases();
+	mainMenu();
 }
