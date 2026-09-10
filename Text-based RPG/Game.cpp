@@ -175,6 +175,7 @@ void Game::loadDatabases() {
 	_itemDatabase.loadFromJson("items.json");
 	_actorDatabase.loadActors();
 	_roomDatabase.loadFromJson("rooms.json");
+	_playerClassDatabase.loadFromJson("playerClasses.json");
 }
 
 bool Game::saveGame(const std::string& filename) {
@@ -205,17 +206,29 @@ bool Game::saveGame(const std::string& filename) {
 bool Game::loadGame(const std::string& filename) {
 	std::ifstream file(filename);
 	if (!file) {
-		std::cerr << "Could not open file: " << filename << std::endl;
+		std::cerr << "No save file found. Start a new game instead.\n";
 		return false;
 	}
 
-	nlohmann::json jsonData;
 
 	try {
+		nlohmann::json jsonData;
 		file >> jsonData;
 
 		_gameState.player = deserializePlayerState(jsonData.at("player"));
 		_gameState.rooms = deserializeRoomStates(jsonData.at("rooms"));
+
+		if (jsonData.contains("currentRoom")) {
+			_gameState.player.currentRoom = jsonData["currentRoom"];
+		}
+		else {
+			_gameState.player.currentRoom = "town_square_01";
+		}
+
+		_inGame = true;
+		std::cout << "Game loaded successfully.\n";
+		return true;
+
 	}
 	catch (const std::exception& e) {
 		std::cerr << "Error occured while loading save file: " << e.what() << std::endl;
@@ -268,11 +281,64 @@ void Game::mainMenu()
 }
 void Game::newGame()
 {
-	// Character creation will go here.
-	//
-	// For now, just establish a starting state.
+	_gameState = GameState();
+	PlayerState& player = _gameState.player;
+
+	std::cout << "\nEnter Your Name: ";
+	std::cin >> player.name;
+	while (true) {
+
+
+		std::cout << "\nChoose Your Class:\n";
+
+		std::cout << "1. Warrior\n";
+		std::cout << "2. Rogue\n";
+		std::cout << "3. Mage\n";
+		std::cout << "> ";
+
+		char input;
+		std::cin >> input;
+
+		switch (input) {
+		case '1':
+			player.classId = "warrior";
+			break;
+		case '2':
+			player.classId = "rogue";
+			break;
+		case '3':
+			player.classId = "mage";
+			break;
+		default:
+			std::cout << "Invalid class selection.\n";
+			continue;
+		}
+
+		//Make sure the class actually exists
+		const PlayerClassDefinition* playerClass = _playerClassDatabase.find(player.classId);
+		if (playerClass == nullptr) {
+			std::cout << "The selected class is unavailable. Please choose again.\n";
+			continue;
+		}
+
+		//Valid class selected
+		player.stats = playerClass->baseStats;
+		player.inventory = playerClass->startingInventory;
+
+		break;
+	}
+
+	player.level = 1;
+	player.skillPoints = 0;
+	player.experience = 0;
+	player.gold = 20;
+	
+	player.currentRoom = "town_square_01";
+	_gameState.rooms[player.currentRoom].visited = true;
 
 	_inGame = true;
+
+	std::cout << "\nGet ready for some adventuring, " << player.name << "!\n";
 }
 
 void Game::gameLoop()
@@ -291,44 +357,108 @@ void Game::gameLoop()
 }
 void Game::handleGameInput(char c)
 {
+	const RoomDefinition* currentRoom = _roomDatabase.find(_gameState.player.currentRoom);
+
+	if (currentRoom == nullptr) {
+		std::cout << "Error: Current room not found.\n";
+		return;
+	}
+
+	Exits direction = Exits::UNKNOWN;
+
 	switch (c)
 	{
 	case 'n':
-		std::cout << "You go north.\n";
+		direction = Exits::NORTH;
 		break;
 
 	case 'e':
-		std::cout << "You go east.\n";
+		direction = Exits::EAST;
 		break;
 
 	case 's':
-		std::cout << "You go south.\n";
+		direction = Exits::SOUTH;
 		break;
 
 	case 'w':
-		std::cout << "You go west.\n";
+		direction = Exits::WEST;
 		break;
 
+	case 'u':
+		direction = Exits::UP;
+		break;
+	case 'd':
+		direction = Exits::DOWN;
+		break;
 	case 'i':
-		std::cout << "Inventory.\n";
-		break;
-
+		std::cout << "Inventory ------ TODO: ADD INVENTORY!\n";
+		return;
 	case 'q':
+		saveGame("save.json");
 		_inGame = false;
-		break;
-
+		return;
 	default:
 		std::cout << "Unknown command.\n";
-		break;
+		return;
 	}
+
+	auto exit = currentRoom->exits.find(direction);
+	if (exit == currentRoom->exits.end()) {
+		std::cout << "You cannot go that way.\n";
+		return;
+	}
+
+	_gameState.player.currentRoom = exit->second;
+
+	RoomState& roomState = _gameState.rooms[exit->second];
+	roomState.visited = true;
 }
 
 void Game::displayCurrentRoom() const
 {
-	// Once GameState has a current room ID, this can use
-	// _roomDatabase to retrieve the corresponding definition.
+	const PlayerState& player = _gameState.player;
+	const RoomDefinition* room = _roomDatabase.find(player.currentRoom);
 
-	std::cout << "\nYou are in Oakvale.\n";
+	if (room == nullptr) {
+		std::cout << "\nError: Current room not found.";
+		return;
+	}
+	std::cout << "\n===" << room->name << "===\n";
+	std::cout << room->description << "\n";
+
+	if (!room->exits.empty()) {
+		std::cout << "\nExits: ";
+		bool first = true;
+
+		for (const auto& [exit, destination] : room->exits) {
+			if (!first)
+				std::cout << ", ";
+			switch (exit) {
+			case Exits::NORTH:
+				std::cout << "North";
+				break;
+			case Exits::EAST:
+				std::cout << "East";
+				break;
+			case Exits::SOUTH:
+				std::cout << "South";
+				break;
+			case Exits::WEST:
+				std::cout << "West";
+				break;
+			case Exits::UP:
+				std::cout << "Up";
+				break;
+			case Exits::DOWN:
+				std::cout << "Down";
+				break;
+			default:
+				break;
+			}
+			first = false;
+		}
+		std::cout << "\n";
+	}
 }
 
 void Game::run()

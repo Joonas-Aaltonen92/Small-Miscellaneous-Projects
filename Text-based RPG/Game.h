@@ -5,6 +5,7 @@
 #include "ActorDatabase.h"
 #include "ItemDatabase.h"
 #include "RoomDatabase.h"
+#include "PlayerClassDatabase.h"
 #include "GameState.h"
 
 class Game {
@@ -12,6 +13,7 @@ private:
 	ActorDatabase _actorDatabase;
 	ItemDatabase _itemDatabase;
 	RoomDatabase _roomDatabase;
+	PlayerClassDatabase _playerClassDatabase;
 
 	GameState _gameState;
 

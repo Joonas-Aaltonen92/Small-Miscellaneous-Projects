@@ -16,6 +16,8 @@ struct PlayerState {
 	int gold = 0;
 	int walletSize = 99;
 
+	std::string currentRoom;
+
 	ActorStats stats;
 
 	std::unordered_map<std::string, int> inventory;
