@@ -391,7 +391,7 @@ void Game::handleGameInput(char c)
 		direction = Exits::DOWN;
 		break;
 	case 'i':
-		std::cout << "Inventory ------ TODO: ADD INVENTORY!\n";
+		displayInventory();
 		return;
 	case 'q':
 		saveGame("save.json");
@@ -458,6 +458,100 @@ void Game::displayCurrentRoom() const
 			first = false;
 		}
 		std::cout << "\n";
+	}
+}
+
+void Game::displayInventory() {
+	bool inventoryActive = true;
+
+	while (inventoryActive) {
+		std::cout << "\n====INVENTORY====\n\n";
+
+		if (_gameState.player.inventory.empty()) {
+			std::cout << "Your inventory is empty :DDD\n";
+			std::cout << "\nPress 0 to return :DDD\n>";
+
+			char input;
+			std::cin >> input;
+			if (input == '0')
+				inventoryActive = false;
+
+			continue;
+		}
+
+		std::vector<std::string> itemIDs;
+		int index = 1;
+		for (const auto& [itemId, quantity] : _gameState.player.inventory) {
+			const ItemDefinition* item = _itemDatabase.find(itemId);
+
+			if (item == nullptr)
+				continue;
+
+			itemIDs.push_back(itemId);
+
+			std::cout << index << ". " << item->name;
+
+			if (quantity > 1)
+				std::cout << " x" << quantity;
+
+			std::cout << '\n';
+			++index;
+		}
+
+		std::cout << "0. Back\n";
+		std::cout << "Select an item: ";
+
+		int selection;
+		std::cin >> selection;
+
+		if (selection == 0) {
+			inventoryActive = false;
+			continue;
+		}
+
+		if (selection < 1 || selection > static_cast<int>(itemIDs.size())){
+			std::cout << "Invalid Selection :DDD\n";
+			continue;
+		}
+
+		const std::string& itemID = itemIDs[selection - 1];
+		const ItemDefinition* item = _itemDatabase.find(itemID);
+
+		if (item == nullptr) {
+			std::cout << "Item not found :DDD\n";
+			continue;
+		}
+		std::cout << "\n===" << item->name << "===\n";
+		std::cout << item->description << '\n';
+		std::cout << "Value: " << item->value << " Gold Coins\n";
+
+		switch (item->type) {
+		case ItemType::EQUIPMENT:
+			std::cout << "Type: Equipment\n";
+			break;
+		case ItemType::CONSUMABLE:
+			std::cout << "Type: Consumable\n";
+			break;
+		case ItemType::TRINKET:
+			std::cout << "Type: Trinket\n";
+			break;
+		case ItemType::KEYITEM:
+			std::cout << "Type: Important Item\n";
+			break;
+		case ItemType::KEY:
+			std::cout << "Type: Key\n";
+			break;
+		default:
+			std::cout << "Type: Unknown :DDD\n";
+			break;
+		}
+
+		std::cout << "\nPress 0 to return to inventory.\n>";
+		
+		int input;
+		std::cin >> input;
+		if (input == 0)
+			continue;
 	}
 }
 

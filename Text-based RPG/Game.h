@@ -25,6 +25,7 @@ private:
 
 	void handleGameInput(char c);
 	void displayCurrentRoom() const;
+	void displayInventory();
 
 public:
 	void newGame();
