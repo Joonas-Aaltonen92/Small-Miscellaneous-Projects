@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
+#include <array>
 #include <vector>
 
 #include "Stats.h"
@@ -9,6 +10,7 @@
 struct PlayerState {
 	std::string name;
 	std::string classId;
+	std::string currentRoom;
 
 	int level = 1;
 	int skillPoints = 0;
@@ -16,9 +18,8 @@ struct PlayerState {
 	int gold = 0;
 	int walletSize = 99;
 
-	std::string currentRoom;
-
 	ActorStats stats;
+	std::array<float, GROWTH_STAT_COUNT> growthRates{};
 
 	std::unordered_map<std::string, int> inventory;
 	std::unordered_map<EquipmentSlot, std::vector<std::string>> equipped;

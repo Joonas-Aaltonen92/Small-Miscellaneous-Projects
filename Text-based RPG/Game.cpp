@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include "Game.h"
 #include "json.hpp"
 
@@ -323,6 +324,7 @@ void Game::newGame()
 
 		//Valid class selected
 		player.stats = playerClass->baseStats;
+		player.growthRates = playerClass->baseStats.growthRates;
 		player.inventory = playerClass->startingInventory;
 
 		break;
@@ -552,6 +554,83 @@ void Game::displayInventory() {
 		std::cin >> input;
 		if (input == 0)
 			continue;
+	}
+}
+
+void Game::levelUpPlayer() {
+
+}
+
+void Game::useItem(const std::string& itemId) {
+	const ItemDefinition* item = _itemDatabase.find(itemId);
+	if (item == nullptr) {
+		std::cout << "Item not found.\n";
+		return;
+	}
+
+	auto inventoryItem = _gameState.player.inventory.find(itemId);
+	if (inventoryItem == _gameState.player.inventory.end()) {
+		std::cout << "You don't have that item.\n";
+		return;
+	}
+
+	switch (item->type) {
+	case ItemType::EQUIPMENT:
+	{
+
+		if (!item->isEquippable()) {
+			std::cout << "You cannot equip this item.\n";
+			return;
+		}
+		for (size_t i = 0; i < COMBAT_STAT_COUNT; ++i) {
+			_gameState.player.stats.baseStats[i] += item->modifiers.flatModifiers[i];
+		}
+
+		for (const auto& [slot, cost] : item->slotCosts) {
+			if (cost > 0)
+				_gameState.player.equipped[slot].push_back(itemId);
+		}
+
+		std::cout << "You equip the " << item->name << ".\n";
+
+		break;
+	}
+	case ItemType::CONSUMABLE:
+	{
+		for (size_t i = 0; i < COMBAT_STAT_COUNT; ++i) {
+			_gameState.player.stats.baseStats[i] += item->modifiers.flatModifiers[i];
+		}
+
+		int& hp = _gameState.player.stats.baseStats[static_cast<size_t>(CombatStat::HP)];
+		const int maxHP = _gameState.player.stats.baseStats[static_cast<size_t>(CombatStat::MAXHP)];
+
+		int& mp = _gameState.player.stats.baseStats[static_cast<size_t>(CombatStat::MP)];
+		const int maxMP = _gameState.player.stats.baseStats[static_cast<size_t>(CombatStat::MAXMP)];
+
+		hp = std::min(hp, maxHP);
+		mp = std::min(mp, maxMP);
+
+		--inventoryItem->second;
+
+		if (inventoryItem->second <= 0)
+			_gameState.player.inventory.erase(inventoryItem);
+
+		std::cout << "You used the " << item->name << ".\n";
+		break;
+	}
+	case ItemType::KEY:
+		std::cout << "You need to choose a target to unlock.\n";
+		break;
+	case ItemType::KEYITEM:
+		std::cout << "You cannot use that item right now.\n";
+		break;
+	case ItemType::TRINKET:
+		std::cout << "This item has no use.\n";
+		break;
+
+	default:
+		std::cout << "You cannot use that item.\n";
+		break;
 	}
 }
 

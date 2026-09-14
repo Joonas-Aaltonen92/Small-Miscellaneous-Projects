@@ -1,0 +1,105 @@
+{
+    "player": {
+        "classId": "mage",
+        "equipped": null,
+        "experience": 0,
+        "gold": 20,
+        "inventory": {
+            "mana_potion": 2,
+            "potion": 2,
+            "ration": 5
+        },
+        "level": 1,
+        "name": "Lonkermanni",
+        "skillPoints": 0,
+        "stats": {
+            "baseStats": [
+                5,
+                5,
+                5,
+                5,
+                5,
+                5,
+                5,
+                5,
+                5,
+                5,
+                5
+            ],
+            "growthRates": [
+                1.100000023841858,
+                1.100000023841858,
+                1.100000023841858,
+                1.100000023841858,
+                1.100000023841858,
+                1.100000023841858,
+                1.100000023841858,
+                1.100000023841858,
+                1.100000023841858
+            ]
+        },
+        "walletSize": 99
+    },
+    "rooms": {
+        "commercial_district_01": {
+            "deadEnemies": [],
+            "departedMerchants": [],
+            "departedNPCs": [],
+            "emptyContainers": [],
+            "itemsPickedUp": {},
+            "openedDoors": [],
+            "spawnedContainers": [],
+            "spawnedDoors": [],
+            "spawnedEnemies": [],
+            "spawnedItems": {},
+            "spawnedMerchants": [],
+            "spawnedNPCs": [],
+            "visited": true
+        },
+        "south_road_01": {
+            "deadEnemies": [],
+            "departedMerchants": [],
+            "departedNPCs": [],
+            "emptyContainers": [],
+            "itemsPickedUp": {},
+            "openedDoors": [],
+            "spawnedContainers": [],
+            "spawnedDoors": [],
+            "spawnedEnemies": [],
+            "spawnedItems": {},
+            "spawnedMerchants": [],
+            "spawnedNPCs": [],
+            "visited": true
+        },
+        "town_gate_01": {
+            "deadEnemies": [],
+            "departedMerchants": [],
+            "departedNPCs": [],
+            "emptyContainers": [],
+            "itemsPickedUp": {},
+            "openedDoors": [],
+            "spawnedContainers": [],
+            "spawnedDoors": [],
+            "spawnedEnemies": [],
+            "spawnedItems": {},
+            "spawnedMerchants": [],
+            "spawnedNPCs": [],
+            "visited": true
+        },
+        "town_square_01": {
+            "deadEnemies": [],
+            "departedMerchants": [],
+            "departedNPCs": [],
+            "emptyContainers": [],
+            "itemsPickedUp": {},
+            "openedDoors": [],
+            "spawnedContainers": [],
+            "spawnedDoors": [],
+            "spawnedEnemies": [],
+            "spawnedItems": {},
+            "spawnedMerchants": [],
+            "spawnedNPCs": [],
+            "visited": true
+        }
+    }
+}

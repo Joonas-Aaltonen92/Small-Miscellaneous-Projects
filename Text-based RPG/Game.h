@@ -26,7 +26,8 @@ private:
 	void handleGameInput(char c);
 	void displayCurrentRoom() const;
 	void displayInventory();
-
+	void levelUpPlayer();
+	void useItem(const std::string& itemId);
 public:
 	void newGame();
 	void run();
