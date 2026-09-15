@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <random>
 #include "Game.h"
 #include "json.hpp"
 
@@ -558,7 +559,119 @@ void Game::displayInventory() {
 }
 
 void Game::levelUpPlayer() {
+	PlayerState& player = _gameState.player;
 
+	++player.level;
+
+	std::random_device rd;
+	std::mt19937 rng(rd());
+
+	std::uniform_int_distribution<int> roll(1, 100);
+
+	constexpr int HPMP_PER_GROWTHSTAT = 5;
+
+	auto applyGrowth = [&](GrowthStat growthStat, CombatStat combatStat) {
+		const int growthIndex = static_cast<int>(growthStat);
+		const int combatIndex = static_cast<int>(combatStat);
+
+		int growthRate = static_cast<int>(player.growthRates[growthIndex]);
+
+		int statIncrease = growthRate / 100;
+		int remainder = growthRate % 100;
+
+		if (roll(rng) <= remainder)
+			++statIncrease;
+
+		player.stats.baseStats[combatIndex] += statIncrease;
+		};
+
+	applyGrowth(GrowthStat::VITALITY, CombatStat::MAXHP);
+	applyGrowth(GrowthStat::WISDOM, CombatStat::MAXMP);
+	applyGrowth(GrowthStat::STRENGTH, CombatStat::POWER);
+	applyGrowth(GrowthStat::ENDURANCE, CombatStat::FORTITUDE);
+	applyGrowth(GrowthStat::INTELLIGENCE, CombatStat::SORCERY);
+	applyGrowth(GrowthStat::RESOLVE, CombatStat::WILLPOWER);
+	applyGrowth(GrowthStat::AGILITY, CombatStat::SPEED);
+	applyGrowth(GrowthStat::FATE, CombatStat::LUCK);
+
+	auto calculateGrowthIncrease = [&](GrowthStat growthStat) {
+		const int growthIndex = static_cast<int>(growthStat);
+		int growthRate = static_cast<int>(player.growthRates[growthIndex]);
+
+		int increase = growthRate / 100;
+		int remainder = growthRate % 100;
+
+		if (roll(rng) <= remainder)
+			++increase;
+		return increase;
+		};
+	const int vitalityIncrease = calculateGrowthIncrease(GrowthStat::VITALITY);
+	const int wisdomIncrease = calculateGrowthIncrease(GrowthStat::WISDOM);
+
+	player.stats.baseStats[static_cast<int>(CombatStat::MAXHP)] += vitalityIncrease * HPMP_PER_GROWTHSTAT;
+	player.stats.baseStats[static_cast<int>(CombatStat::MAXMP)] += wisdomIncrease * HPMP_PER_GROWTHSTAT;
+
+	player.stats.baseStats[static_cast<int>(CombatStat::HP)] = player.stats.baseStats[static_cast<int>(CombatStat::MAXHP)];
+	player.stats.baseStats[static_cast<int>(CombatStat::MP)] = player.stats.baseStats[static_cast<int>(CombatStat::MAXMP)];
+
+	std::cout << "\n====LEVEL UP====\n\n";
+	std::cout << "You've reached level " << player.level << "!\n";
+
+	bool choosingGrowth = true;
+
+	while (choosingGrowth) {
+		std::cout << "\nChoose a growth stat to improve:\n";
+		std::cout << "1. Vitality (" << player.growthRates[static_cast<int>(GrowthStat::VITALITY)] << "%\n";
+		std::cout << "2. Wisdom (" << player.growthRates[static_cast<int>(GrowthStat::WISDOM)] << "%\n";
+		std::cout << "3. Strength (" << player.growthRates[static_cast<int>(GrowthStat::STRENGTH)] << "%\n";
+		std::cout << "4. Endurance (" << player.growthRates[static_cast<int>(GrowthStat::ENDURANCE)] << "%\n";
+		std::cout << "5. Intelligence (" << player.growthRates[static_cast<int>(GrowthStat::INTELLIGENCE)] << "%\n";
+		std::cout << "6. Resolve (" << player.growthRates[static_cast<int>(GrowthStat::RESOLVE)] << "%\n";
+		std::cout << "7. Agility (" << player.growthRates[static_cast<int>(GrowthStat::AGILITY)] << "%\n";
+		std::cout << "8. Fate (" << player.growthRates[static_cast<int>(GrowthStat::FATE)] << "%\n";
+
+		std::cout << "> ";
+
+		int choice;
+		std::cin >> choice;
+
+		GrowthStat selectedGrowth = GrowthStat::UNKNOWN;
+
+		switch (choice) {
+		case 1:
+			selectedGrowth = GrowthStat::VITALITY;
+			break;
+		case 2:
+			selectedGrowth = GrowthStat::WISDOM;
+			break;
+		case 3:
+			selectedGrowth = GrowthStat::STRENGTH;
+			break;
+		case 4:
+			selectedGrowth = GrowthStat::ENDURANCE;
+			break;
+		case 5:
+			selectedGrowth = GrowthStat::INTELLIGENCE;
+			break;
+		case 6:
+			selectedGrowth = GrowthStat::RESOLVE;
+			break;
+		case 7:
+			selectedGrowth = GrowthStat::AGILITY;
+			break;
+		case 8:
+			selectedGrowth = GrowthStat::FATE;
+			break;
+		default:
+			std::cout << "Invalid selection. Please choose a growth stat.\n";
+		}
+
+		const int growthIndex = static_cast<int>(selectedGrowth);
+		player.growthRates[growthIndex] += 10.0f;
+		std::cout << "\nGrowth rate increased to " << player.growthRates[growthIndex] << "%.\n";
+
+		choosingGrowth = false;
+	}
 }
 
 void Game::useItem(const std::string& itemId) {

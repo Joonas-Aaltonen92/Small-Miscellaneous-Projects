@@ -13,7 +13,6 @@ struct PlayerState {
 	std::string currentRoom;
 
 	int level = 1;
-	int skillPoints = 0;
 	int experience = 0;
 	int gold = 0;
 	int walletSize = 99;
