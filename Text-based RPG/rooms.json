@@ -186,7 +186,12 @@
     "containers": [],
     "doors": [],
     "merchants": [],
-    "enemies": [],
+    "enemies": [
+	{
+		"id":"rat",
+		"level":2
+	}
+	],
     "loot": {
       "iron_sword": 1,
       "ration": 1
@@ -221,7 +226,12 @@
     "containers": [],
     "doors": [],
     "merchants": [],
-    "enemies": [],
+    "enemies": [
+	{
+		"id":"skeleton",
+		"level":3
+	}
+	],
     "loot": {}
   },
 

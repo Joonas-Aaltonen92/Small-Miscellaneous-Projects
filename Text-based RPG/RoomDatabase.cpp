@@ -76,8 +76,14 @@ bool RoomDatabase::loadFromJson(const std::string& filename) {
 			}
 		}
 		if (definition.contains("enemies") && definition["actors"].is_array()) {
-			for (const auto& actorId : definition["actors"]) {
-				room.enemies.push_back(actorId.get<std::string>());
+			for (const auto& enemyJson : definition["enemies"])
+			{
+				EnemyState enemy;
+
+				enemy.id = enemyJson["id"].get<std::string>();
+				enemy.level = enemyJson.value("level", 1);
+
+				room.enemies.push_back(std::move(enemy));
 			}
 		}
 

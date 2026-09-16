@@ -2,6 +2,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <EnemyState.h>
 
 enum class Exits {
 	NORTH,
@@ -28,7 +29,7 @@ struct RoomDefinition {
 	std::vector<std::string> containers;
 	std::vector<std::string> doors;
 	std::vector<std::string> merchants;
-	std::vector<std::string> enemies;
+	std::vector<EnemyState> enemies;
 
 
 	std::unordered_map<std::string, int> loot;//This is for items that are just lying around in the room, not in containers (because Actors have their own inventories)

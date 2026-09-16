@@ -5,6 +5,7 @@
 #include <random>
 #include "Game.h"
 #include "json.hpp"
+#include "EnemyState.h"
 
 namespace {
 	std::string equipmentSlotToString(EquipmentSlot slot) {
@@ -46,7 +47,6 @@ namespace {
 		jsonData["name"] = player.name;
 		jsonData["classId"] = player.classId;
 		jsonData["level"] = player.level;
-		jsonData["skillPoints"] = player.skillPoints;
 		jsonData["experience"] = player.experience;
 		jsonData["gold"] = player.gold;
 		jsonData["walletSize"] = player.walletSize;
@@ -57,19 +57,32 @@ namespace {
 		return jsonData;
 	}
 
+	nlohmann::json serializeEnemyState(const EnemyState& enemy) {
+		return{
+			{"id",enemy.id},
+			{"level",enemy.level}
+		};
+	}
+
 	nlohmann::json serializeRoomState(const RoomState& room) {
 		nlohmann::json jsonData;
 
 		jsonData["visited"] = room.visited;
 
-		jsonData["deadEnemies"] = room.deadEnemies;
-		jsonData["emptyContainers"] = room.emptiedContainers;
+		jsonData["deadEnemies"] = nlohmann::json::array();
+		for (const auto& enemy : room.deadEnemies) {
+			jsonData["deadEnemies"].push_back(serializeEnemyState(enemy));
+		}
+		jsonData["emptiedContainers"] = room.emptiedContainers;
 		jsonData["openedDoors"] = room.openedDoors;
 		jsonData["departedNPCs"] = room.departedNPCs;
 		jsonData["departedMerchants"] = room.departedMerchants;
 		jsonData["itemsPickedUp"] = room.itemsPickedUp;
 
-		jsonData["spawnedEnemies"] = room.spawnedEnemies;
+		jsonData["spawnedEnemies"] = nlohmann::json::array();
+		for (const auto& enemy : room.spawnedEnemies) {
+			jsonData["spawnedEnemies"].push_back(serializeEnemyState(enemy));
+		}
 		jsonData["spawnedContainers"] = room.spawnedContainers;
 		jsonData["spawnedDoors"] = room.spawnedDoors;
 		jsonData["spawnedNPCs"] = room.spawnedNPCs;
@@ -128,7 +141,6 @@ namespace {
 		player.name = jsonData.value("name", "unknown");
 		player.classId = jsonData.value("classId", "unknown class");
 		player.level = jsonData.value("level", 0);
-		player.skillPoints = jsonData.value("skillPoints", 0);
 		player.experience = jsonData.value("experience", 0);
 		player.gold = jsonData.value("gold", 0);
 		player.walletSize = jsonData.value("walletSize", 0);
@@ -142,6 +154,12 @@ namespace {
 		return player;
 	}
 
+	EnemyState deserializeEnemyState(const nlohmann::json& jsonData) {
+		EnemyState enemy;
+		enemy.id = jsonData["id"].get<std::string>();
+		enemy.level = jsonData.value("level", 1);
+		return enemy;
+	}
 
 	std::unordered_map < std::string, RoomState> deserializeRoomStates(const nlohmann::json& jsonData) {
 		
@@ -153,14 +171,22 @@ namespace {
 			
 			room.visited = definition.value("visited", false);
 			
-			room.deadEnemies = definition.value("deadEnemies", std::unordered_set<std::string>{});
-			room.emptiedContainers = definition.value("emptyContainers", std::unordered_set<std::string>{});
+			if (definition.contains("deadEnemies")) {
+				for (const auto& enemyJson : definition["deadEnemies"]) {
+					room.deadEnemies.push_back(deserializeEnemyState(enemyJson));
+				}
+			}
+			room.emptiedContainers = definition.value("emptiedContainers", std::unordered_set<std::string>{});
 			room.departedNPCs = definition.value("departedNPCs", std::unordered_set<std::string>{});
 			room.departedMerchants = definition.value("departedMerchants", std::unordered_set<std::string>{});
 			room.openedDoors = definition.value("openedDoors", std::unordered_set<std::string>{});
 			room.itemsPickedUp = definition.value("itemsPickedUp", std::unordered_map<std::string, int>{});
 			
-			room.spawnedEnemies = definition.value("spawnedEnemies", std::unordered_set<std::string>{});
+			if (definition.contains("spawnedEnemies")) {
+				for (const auto& enemyJson : definition["spawnedEnemies"]) {
+					room.spawnedEnemies.push_back(deserializeEnemyState(enemyJson));
+				}
+			}
 			room.spawnedContainers = definition.value("spawnedContainers", std::unordered_set<std::string>{});
 			room.spawnedDoors = definition.value("spawnedDoors", std::unordered_set<std::string>{});
 			room.spawnedNPCs = definition.value("spawnedNPCs", std::unordered_set<std::string>{});
@@ -171,6 +197,7 @@ namespace {
 		}
 		return rooms;
 	}
+
 }
 
 void Game::loadDatabases() {
@@ -332,7 +359,6 @@ void Game::newGame()
 	}
 
 	player.level = 1;
-	player.skillPoints = 0;
 	player.experience = 0;
 	player.gold = 20;
 	
@@ -411,9 +437,12 @@ void Game::handleGameInput(char c)
 		return;
 	}
 
-	_gameState.player.currentRoom = exit->second;
+	//Store the previous room before moving to next room.
+	const std::string destination = exit->second;
+	_previousRoom = _gameState.player.currentRoom;
+	_gameState.player.currentRoom = destination;
 
-	RoomState& roomState = _gameState.rooms[exit->second];
+	RoomState& roomState = _gameState.rooms[destination];
 	roomState.visited = true;
 }
 
@@ -746,6 +775,115 @@ void Game::useItem(const std::string& itemId) {
 		break;
 	}
 }
+
+void Game::encounterEnemy(const std::string& enemyId, int enemyLevel) {
+	const EnemyDefinition* enemy = _actorDatabase.findEnemy(enemyId);
+	if (enemy == nullptr) {
+		std::cout << "Error: Enemy not found :DD Not good :DDD\n";
+		return;
+	}
+
+	std::cout << "\nA(n) " << enemy->name << " appeared!\n";
+
+	while (true) {
+		std::cout << "\n1. Fight\n2. Flee\n> ";
+		int choice;
+		std::cin >> choice;
+
+		switch (choice) {
+		case 1:
+			battle(enemyId,enemyLevel);
+			return;
+		case 2:
+			if (_previousRoom.empty()) {
+				std::cout << "\nCould not run away!\n";
+				battle(enemyId,enemyLevel);
+				return;
+			}
+
+			std::cout << "\nRun away!!!\n";
+			std::cout << "\nYou retreated back to the previous room like a coward.\n";
+			_gameState.player.currentRoom = _previousRoom;
+			return;
+
+		default:
+			std::cout << "\nInvalid selection.\n";
+			break;
+		}
+	}
+}
+
+void Game::battle(const std::string& enemyId, int enemyLevel) {
+	const EnemyDefinition* enemyDefinition = _actorDatabase.findEnemy(enemyId);
+	if (enemyDefinition == nullptr) {
+		std::cout << "Error: Enemy not found :D:DDD:D\n";
+		return;
+	}
+	EnemyDefinition enemy = *enemyDefinition;
+
+	//Scale enemy stats according to its level
+	for (int& stat : enemy.stats.baseStats) {
+		stat += enemyLevel;
+	}
+
+	const int enemyMaxHP = enemy.stats.baseStats[static_cast<int>(CombatStat::MAXHP)];
+	int enemyHP = enemyMaxHP;
+	const int enemyMaxMP = enemy.stats.baseStats[static_cast<int>(CombatStat::MAXMP)];
+	int enemyMP = enemyMaxMP;
+
+	PlayerState& player = _gameState.player;
+
+	std::cout << "\n=====D-D-D-DUEL!=========\n\n";
+	std::cout << "A level " << enemyLevel << " " << enemy.name << " appeared!\n";
+
+	while (true) {
+		const int playerHP = player.stats.baseStats[static_cast<int>(CombatStat::HP)];
+
+		if (playerHP <= 0) {
+			playerDeath();
+			return;
+		}
+
+		if (enemyHP <= 0) {
+			playerVictory(enemyId, enemyLevel);
+			return;
+		}
+
+		std::cout << "\n---------------------------------------\n";
+		std::cout << player.name << ": " << playerHP << "/" << player.stats.baseStats[static_cast<int>(CombatStat::MAXHP)] << " HP\n";
+		std::cout << "Lv. "<<enemyLevel << " " << enemy.name << ": " << enemyHP << "/" << enemy.stats.baseStats[static_cast<int>(CombatStat::MAXHP)] << " HP\n";
+
+		const int playerSpeed = player.stats.baseStats[static_cast<int>(CombatStat::SPEED)];
+		const int enemySpeed = enemy.stats.baseStats[static_cast<int>(CombatStat::SPEED)];
+
+		const bool playerGoesFirst = playerSpeed >= enemySpeed;
+
+	}
+}
+
+void Game::playerDeath() {
+	std::cout << "\n====YOU DIED====\n\n";
+	std::cout << "Press enter to return to main menu.\n";
+	std::cin.get();
+	_inGame = false;
+}
+
+void Game::playerVictory(const std::string& enemyId, int enemyLevel) {
+	const EnemyDefinition* enemy = _actorDatabase.findEnemy(enemyId);
+	if (enemy == nullptr) {
+		std::cout << "Error: Enemy not found :DDDD\n";
+		return;
+	}
+
+	PlayerState& player = _gameState.player;
+	RoomState& room = _gameState.rooms[player.currentRoom];
+
+	std::cout << "\n=====VICTORY======\n\n";
+	std::cout << "You defeated a dastardly " << enemy->name << "!\n";
+
+	player.experience = enemy->baseExpYield;
+}
+
 
 void Game::run()
 {

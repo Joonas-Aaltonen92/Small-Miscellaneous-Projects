@@ -20,6 +20,8 @@ private:
 	bool _running = true;
 	bool _inGame = false;
 
+	std::string _previousRoom;
+
 	void mainMenu();
 	void gameLoop();
 
@@ -28,6 +30,10 @@ private:
 	void displayInventory();
 	void levelUpPlayer();
 	void useItem(const std::string& itemId);
+	void encounterEnemy(const std::string& enemyId, int enemyLevel);
+	void battle(const std::string& enemyId, int enemyLevel);
+	void playerDeath();
+	void playerVictory(const std::string& enemyId, int enemyLevel);
 public:
 	void newGame();
 	void run();
