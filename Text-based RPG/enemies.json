@@ -2,7 +2,7 @@
   "skeleton": {
     "name": "Skeleton",
     "description": "A reanimated pile of bones.",
-    "baseExpYield": 1,
+    "baseExpYield": 40,
     "stats": {
       "combatStat": {
         "hp": 10,
@@ -34,7 +34,7 @@
   "rat": {
     "name": "Sewer Rat",
     "description": "Nasty little bugger.",
-    "baseExpYield": 1,
+    "baseExpYield": 25,
     "stats": {
       "combatStat": {
         "hp": 5,
@@ -66,7 +66,7 @@
   "strong_skeleton": {
     "name": "Armored Skeleton",
     "description": "A skeleton still wearing pieces of ancient armor.",
-    "baseExpYield": 3,
+    "baseExpYield": 60,
     "stats": {
       "combatStat": {
         "hp": 25,

@@ -27,13 +27,16 @@ private:
 
 	void handleGameInput(char c);
 	void displayCurrentRoom() const;
+	void lookAround();
 	void displayInventory();
 	void levelUpPlayer();
 	void useItem(const std::string& itemId);
+	void checkEnemyEncounter();
 	void encounterEnemy(const std::string& enemyId, int enemyLevel);
 	void battle(const std::string& enemyId, int enemyLevel);
 	void playerDeath();
 	void playerVictory(const std::string& enemyId, int enemyLevel);
+	void checkLevelup();
 public:
 	void newGame();
 	void run();

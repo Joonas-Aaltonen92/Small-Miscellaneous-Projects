@@ -198,6 +198,10 @@ namespace {
 		return rooms;
 	}
 
+
+	int getExperienceRequirement(int level) {
+		return level * level * 115;
+	}
 }
 
 void Game::loadDatabases() {
@@ -375,7 +379,6 @@ void Game::gameLoop()
 	while (_inGame && _running)
 	{
 		displayCurrentRoom();
-
 		std::cout << "\n> ";
 
 		char input;
@@ -444,6 +447,8 @@ void Game::handleGameInput(char c)
 
 	RoomState& roomState = _gameState.rooms[destination];
 	roomState.visited = true;
+
+	checkEnemyEncounter();
 }
 
 void Game::displayCurrentRoom() const
@@ -823,7 +828,7 @@ void Game::battle(const std::string& enemyId, int enemyLevel) {
 
 	//Scale enemy stats according to its level
 	for (int& stat : enemy.stats.baseStats) {
-		stat += enemyLevel;
+		stat *= enemyLevel;
 	}
 
 	const int enemyMaxHP = enemy.stats.baseStats[static_cast<int>(CombatStat::MAXHP)];
@@ -858,6 +863,117 @@ void Game::battle(const std::string& enemyId, int enemyLevel) {
 
 		const bool playerGoesFirst = playerSpeed >= enemySpeed;
 
+		auto playerTurn = [&]() -> bool {
+			std::cout << "\n1. Attack\n";
+			std::cout << "\n2. Spell\n> ";
+
+			int choice;
+			std::cin >> choice;
+
+			switch (choice) {
+				case 1:
+				{
+					const int playerPower = player.stats.baseStats[static_cast<int>(CombatStat::POWER)];
+					const int enemyFortitude = enemy.stats.baseStats[static_cast<int>(CombatStat::FORTITUDE)];
+
+					int damage = playerPower - enemyFortitude;
+					if (damage < 1)
+						damage = 0;
+
+					enemyHP -= damage;
+
+					std::cout << "You dealt " << damage << " to " << enemy.name << ".\n";
+					return true;
+				}
+				case 2:
+				{
+					const int playerSorcery = player.stats.baseStats[static_cast<int>(CombatStat::SORCERY)];
+					const int enemyWillpower = enemy.stats.baseStats[static_cast<int>(CombatStat::WILLPOWER)];
+
+					int damage = playerSorcery - enemyWillpower;
+					if (damage < 1)
+						damage = 0;
+
+					enemyHP -= damage;
+
+					std::cout << "You dealt " << damage << " to " << enemy.name << ".\n";
+					return true;
+				}
+
+				default:
+					std::cout << "Invalid selection.\n";
+					return false;
+				}
+			};
+
+		auto enemyTurn = [&](){
+
+			int enemyAttack;
+			int playerDefense;
+			if (enemy.stats.baseStats[static_cast<int>(CombatStat::POWER)] >= enemy.stats.baseStats[static_cast<int>(CombatStat::SORCERY)]) {
+				enemyAttack = enemy.stats.baseStats[static_cast<int>(CombatStat::POWER)];
+				playerDefense = player.stats.baseStats[static_cast<int>(CombatStat::FORTITUDE)];
+			}
+			else {
+				enemyAttack = enemy.stats.baseStats[static_cast<int>(CombatStat::SORCERY)];
+				playerDefense = player.stats.baseStats[static_cast<int>(CombatStat::WILLPOWER)];
+			}
+
+
+			int damage = enemyAttack - playerDefense;
+			if (damage < 1)
+				damage = 0;
+
+			player.stats.baseStats[static_cast<int>(CombatStat::HP)] -= damage;
+
+			std::cout << "Enemy dealt " << damage << " points of damage.\n";
+			
+			if (player.stats.baseStats[static_cast<int>(CombatStat::HP)] < 0) {
+				player.stats.baseStats[static_cast<int>(CombatStat::HP)] = 0;
+			}
+		
+		};
+
+		if (playerGoesFirst) {
+			std::cout << "Gotta go fast! You get to attack first!\n";
+			playerTurn();
+			std::cout << "Lv. " << enemyLevel << " " << enemy.name << ": " << enemyHP << "/" << enemy.stats.baseStats[static_cast<int>(CombatStat::MAXHP)] << " HP\n";
+
+			if (enemyHP <= 0) {
+				playerVictory(enemyId, enemyLevel);
+				return;
+			}
+
+			enemyTurn();
+			std::cout << player.name << ": " << playerHP << "/" << player.stats.baseStats[static_cast<int>(CombatStat::MAXHP)] << " HP\n";
+
+			if (player.stats.baseStats[static_cast<int>(CombatStat::HP)] <= 0)
+			{
+				playerDeath();
+				return;
+			}
+		}
+		else {
+			std::cout << "You're too slow! " << enemy.id << " gets to move first!\n";
+			enemyTurn();
+			std::cout << player.name << ": " << playerHP << "/" << player.stats.baseStats[static_cast<int>(CombatStat::MAXHP)] << " HP\n";
+
+			if (player.stats.baseStats[
+				static_cast<int>(CombatStat::HP)] <= 0)
+			{
+				playerDeath();
+				return;
+			}
+
+			playerTurn();
+			std::cout << "Lv. " << enemyLevel << " " << enemy.name << ": " << enemyHP << "/" << enemy.stats.baseStats[static_cast<int>(CombatStat::MAXHP)] << " HP\n";
+
+			if (enemyHP <= 0)
+			{
+				playerVictory(enemyId, enemyLevel);
+				return;
+			}
+		}
 	}
 }
 
@@ -881,9 +997,183 @@ void Game::playerVictory(const std::string& enemyId, int enemyLevel) {
 	std::cout << "\n=====VICTORY======\n\n";
 	std::cout << "You defeated a dastardly " << enemy->name << "!\n";
 
-	player.experience = enemy->baseExpYield;
+	const int expGained = enemy->baseExpYield * enemyLevel;
+	player.experience += expGained;
+
+	std::cout << "You gained " << expGained << " experience points.\n";
+	checkLevelup();
+
+	if (!enemy->lootTable.empty()) {
+		std::cout << "\nLOOT:\n";
+		for (const auto& [itemId, quantity] : enemy->lootTable) {
+			if (quantity <= 0)
+				continue;
+			const ItemDefinition* item = _itemDatabase.find(itemId);
+			if (item == nullptr) {
+				std::cout << "Error: Loot item not found :DDD:D:D Oops! :DD\n";
+				continue;
+			}
+
+			player.inventory[itemId] += quantity;
+			std::cout << "- " << item->name;
+			if (quantity > 1)
+				std::cout << " x" << quantity;
+			std::cout << '\n';
+		}
+	}
+
+	//Mark this specific enemy instance as dead
+	room.deadEnemies.push_back(EnemyState{ enemyId,enemyLevel });
 }
 
+void Game::checkLevelup() {
+	PlayerState& player = _gameState.player;
+	while (player.experience >= getExperienceRequirement(player.level)) {
+		levelUpPlayer();
+	}
+}
+
+void Game::checkEnemyEncounter() {
+	const PlayerState& player = _gameState.player;
+	const RoomDefinition* room = _roomDatabase.find(player.currentRoom);
+
+	if (room == nullptr) {
+		return;
+	}
+	RoomState& roomState = _gameState.rooms[player.currentRoom];
+
+	for (const EnemyState& enemy : room->enemies) {
+		const auto deadEnemy = std::find_if(roomState.deadEnemies.begin(), roomState.deadEnemies.end(), [&](const EnemyState& dead) {
+			return dead.id == enemy.id && dead.level == enemy.level;
+			});
+		if (deadEnemy != roomState.deadEnemies.end()) {
+			continue;
+		}
+
+		encounterEnemy(enemy.id, enemy.level);
+		return;
+	}
+}
+
+void Game::lookAround() {
+	const PlayerState& player = _gameState.player;
+	const RoomDefinition* room = _roomDatabase.find(player.currentRoom);
+
+	if (room == nullptr) {
+		std::cout << "Error: Current room not found.\n";
+		return;
+	}
+
+	RoomState& roomState = _gameState.rooms[player.currentRoom];
+	std::cout << "\n\n=====LOOKING AROUND=======\n\n";
+	bool foundSomething = false;
+
+	//NPCs
+	for (const std::string& npcId : room->npcs) {
+		if (std::find(roomState.departedNPCs.begin(), roomState.departedNPCs.end(), npcId) != roomState.departedNPCs.end()) {
+			continue;
+		}
+
+		const NPCDefinition* npc = _actorDatabase.findNPC(npcId);
+
+		if (npc == nullptr)
+			continue;
+
+		std::cout << "You see " << npc->name << " loitering around.\n";
+		foundSomething = true;
+	}
+
+	//Merchants
+	for (const std::string& merchantId : room->merchants) {
+		if (std::find(roomState.departedMerchants.begin(), roomState.departedMerchants.end(), merchantId) != roomState.departedMerchants.end()) {
+			continue;
+		}
+
+		const MerchantDefinition* merchant = _actorDatabase.findMerchant(merchantId);
+
+		if (merchant == nullptr)
+			continue;
+
+		std::cout << "You see " << merchant->name << " trying to cheat customers.\n";
+		foundSomething = true;
+	}
+	// Containers
+	for (const std::string& containerId : room->containers)
+	{
+		if (std::find(
+			roomState.emptiedContainers.begin(),
+			roomState.emptiedContainers.end(),
+			containerId) != roomState.emptiedContainers.end())
+		{
+			continue;
+		}
+
+		const ContainerDefinition* container =
+			_actorDatabase.findContainer(containerId);
+
+		if (container == nullptr)
+			continue;
+
+		std::cout << container->name
+			<< " is locked.\n";
+
+		foundSomething = true;
+	}
+
+	// Doors
+	for (const std::string& doorId : room->doors)
+	{
+		if (std::find(
+			roomState.openedDoors.begin(),
+			roomState.openedDoors.end(),
+			doorId) != roomState.openedDoors.end())
+		{
+			continue;
+		}
+
+		const DoorDefinition* door =
+			_actorDatabase.findDoor(doorId);
+
+		if (door == nullptr)
+			continue;
+
+		std::cout << door->name
+			<< " is shut.\n";
+
+		foundSomething = true;
+	}
+
+	// Items lying in the room.
+	for (const auto& [itemId, quantity] : room->loot)
+	{
+		if (roomState.itemsPickedUp.contains(itemId))
+		{
+			continue;
+		}
+
+		const ItemDefinition* item =
+			_itemDatabase.find(itemId);
+
+		if (item == nullptr)
+			continue;
+
+		std::cout << item->name;
+
+		if (quantity > 1)
+		{
+			std::cout << " x" << quantity;
+		}
+
+		std::cout << " is just lying on the ground.\n";
+
+		foundSomething = true;
+	}
+
+	if (!foundSomething)
+	{
+		std::cout << "There is nothing of interest here.\n";
+	}
+}
 
 void Game::run()
 {

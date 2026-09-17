@@ -55,27 +55,27 @@ bool RoomDatabase::loadFromJson(const std::string& filename) {
 			std::cout << "WARNING: No exits found for Room (" << id << "), check JSON just in case.\n";
 		}
 
-		if (definition.contains("npcs") && definition["actors"].is_array()) {
+		if (definition.contains("npcs") && definition["npcs"].is_array()) {
 			for (const auto& actorId : definition["actors"]) {
 				room.npcs.push_back(actorId.get<std::string>());
 			}
 		}
-		if (definition.contains("containers") && definition["actors"].is_array()) {
+		if (definition.contains("containers") && definition["containers"].is_array()) {
 			for (const auto& actorId : definition["actors"]) {
 				room.containers.push_back(actorId.get<std::string>());
 			}
 		}
-		if (definition.contains("doors") && definition["actors"].is_array()) {
+		if (definition.contains("doors") && definition["doors"].is_array()) {
 			for (const auto& actorId : definition["actors"]) {
 				room.doors.push_back(actorId.get<std::string>());
 			}
 		}
-		if (definition.contains("merchants") && definition["actors"].is_array()) {
+		if (definition.contains("merchants") && definition["merchants"].is_array()) {
 			for (const auto& actorId : definition["actors"]) {
 				room.merchants.push_back(actorId.get<std::string>());
 			}
 		}
-		if (definition.contains("enemies") && definition["actors"].is_array()) {
+		if (definition.contains("enemies") && definition["enemies"].is_array()) {
 			for (const auto& enemyJson : definition["enemies"])
 			{
 				EnemyState enemy;
@@ -83,6 +83,7 @@ bool RoomDatabase::loadFromJson(const std::string& filename) {
 				enemy.id = enemyJson["id"].get<std::string>();
 				enemy.level = enemyJson.value("level", 1);
 
+				std::cout << "Enemy " << enemy.id << " loaded into room " << room.id << ".\n";
 				room.enemies.push_back(std::move(enemy));
 			}
 		}
