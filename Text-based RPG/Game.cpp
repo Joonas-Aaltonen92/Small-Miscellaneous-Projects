@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <random>
+#include <limits>
 #include "Game.h"
 #include "json.hpp"
 #include "EnemyState.h"
@@ -428,6 +429,9 @@ void Game::handleGameInput(char c)
 	case 'q':
 		saveGame("save.json");
 		_inGame = false;
+		return;
+	case 'x':
+		lookForNPCtoTalkTo();
 		return;
 	default:
 		std::cout << "Unknown command.\n";
@@ -1172,6 +1176,92 @@ void Game::lookAround() {
 	if (!foundSomething)
 	{
 		std::cout << "There is nothing of interest here.\n";
+	}
+}
+
+void Game::talkToNPC(const std::string& npcId) {
+	const PlayerState& player = _gameState.player;
+	const RoomDefinition* room = _roomDatabase.find(player.currentRoom);
+	if (room == nullptr) {
+		std::cout << "Error: Room not found :DDD\n";
+		return;
+	}
+
+	if (std::find(room->npcs.begin(), room->npcs.end(), npcId) == room->npcs.end()) {
+		std::cout << "That NPC (" << npcId << ") does not exist in this room.\n";
+		return;
+	}
+
+	const NPCDefinition* npc = _actorDatabase.findNPC(npcId);
+	if (npc == nullptr) {
+		std::cout << "Error: NPC (" << npcId << ") not found :D:D\n";
+		return;
+	}
+
+	if (npc->dialogue.empty()) {
+		std::cout << "Error: NPC ("<<npcId<<") has no dialogue!!!:DDDDD\n";
+		return;
+	}
+
+	std::cout << "\n\n=====DIALOGUE====\n\n";
+	std::cout << "You're now talking to "<< npc->name <<". Press Enter to advance dialogue.\n\n";
+
+	for (const std::string& line : npc->dialogue) {
+		std::cout << "\n" << npc->name << ": " << line << '\n';
+
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		std::cin.get();
+	}
+
+	std::cout << "\nConversation over :D\n\n";
+}
+
+void Game::lookForNPCtoTalkTo() {
+	const PlayerState& player = _gameState.player;
+	const RoomDefinition* room = _roomDatabase.find(player.currentRoom);
+	if (room == nullptr) {
+		std::cout << "Error: Current room not found\n";
+		return;
+	}
+
+	std::vector<std::string> npcIds;
+	for (const std::string& npcId : room->npcs) {
+		const NPCDefinition* npc = _actorDatabase.findNPC(npcId);
+		if (npc == nullptr)
+			continue;
+
+		npcIds.push_back(npcId);
+	}
+
+	if (npcIds.empty()) {
+		std::cout << "\nThere's nobody to talk to.\n\n";
+		return;
+	}
+
+	while (true) {
+		std::cout << "\n====INTERACT=====\n\n";
+
+		for (size_t i = 0; i << npcIds.size(); ++i) {
+			const NPCDefinition* npc = _actorDatabase.findNPC(npcIds[i]);
+			if (npc == nullptr)
+				continue;
+
+			std::cout << i + 1 << ". Talk to " << npc->name << '\n';
+		}
+		std::cout << "0. Return\n\n>";
+
+		int selection;
+		std::cin >> selection;
+
+		if (selection == 0)
+			return;
+
+		if (selection < 1 || selection > static_cast<int>(npcIds.size())) {
+			std::cout << "Invalid selection.\n";
+			continue;
+		}
+
+		talkToNPC(npcIds[selection - 1]);
 	}
 }
 

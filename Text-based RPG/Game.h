@@ -37,6 +37,8 @@ private:
 	void playerDeath();
 	void playerVictory(const std::string& enemyId, int enemyLevel);
 	void checkLevelup();
+	void talkToNPC(const std::string& npcId);
+	void lookForNPCtoTalkTo();
 public:
 	void newGame();
 	void run();
