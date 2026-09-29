@@ -1265,6 +1265,48 @@ void Game::lookForNPCtoTalkTo() {
 	}
 }
 
+void Game::lookForMerchant() {
+	const PlayerState player = _gameState.player;
+	const RoomDefinition* room = _roomDatabase.find(player.currentRoom);
+	if (room == nullptr) {
+		std::cout << "Error: No room found :D\n";
+		return;
+	}
+
+	std::vector<std::string> merchantIds;
+	for (const std::string& merchantId : room->merchants) {
+		const MerchantDefinition* merchant = _actorDatabase.findMerchant(merchantId);
+		if (merchant == nullptr)
+			continue;
+
+		merchantIds.push_back(merchantId);
+	}
+	if (merchantIds.empty()) {
+		std::cout << "\nNo merchants around...\n\n";
+		return;
+	}
+	while (true) {
+		std::cout << "\n=====INTERACT=========\n\n";
+
+		for (size_t i = 0; i << merchantIds.size(); ++i) {
+			const MerchantDefinition* merchant = _actorDatabase.findMerchant(merchantIds[i]);
+			if (merchant == nullptr)
+				continue;
+			std::cout << i + 1 << ". Talk to " << merchant->name << '\n';
+		}
+		std::cout << "0. Return\n\n>";
+		int selection;
+		std::cin >> selection;
+		if (selection == 0)
+			return;
+		if (selection < 1 || selection > static_cast<int>(merchantIds.size())) {
+			std::cout << "Invalid selection :D\n";
+			continue;
+		}
+		//talkToMerchant(merchantIds[selection-1]);
+	}
+}
+
 void Game::run()
 {
 	loadDatabases();

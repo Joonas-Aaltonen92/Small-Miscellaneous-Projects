@@ -39,6 +39,7 @@ private:
 	void checkLevelup();
 	void talkToNPC(const std::string& npcId);
 	void lookForNPCtoTalkTo();
+	void lookForMerchant();
 public:
 	void newGame();
 	void run();
