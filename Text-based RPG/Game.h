@@ -40,6 +40,7 @@ private:
 	void talkToNPC(const std::string& npcId);
 	void lookForNPCtoTalkTo();
 	void lookForMerchant();
+	void tradeWithMerchant(const std::string& merchantId);
 public:
 	void newGame();
 	void run();
