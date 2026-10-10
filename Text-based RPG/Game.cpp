@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <random>
 #include <limits>
+#include <unordered_map>
 #include "Game.h"
 #include "json.hpp"
 #include "EnemyState.h"
@@ -1150,21 +1151,18 @@ void Game::lookAround() {
 	// Items lying in the room.
 	for (const auto& [itemId, quantity] : room->loot)
 	{
-		if (roomState.itemsPickedUp.contains(itemId))
-		{
+		if (roomState.itemsPickedUp.contains(itemId)){
 			continue;
 		}
 
-		const ItemDefinition* item =
-			_itemDatabase.find(itemId);
+		const ItemDefinition* item =_itemDatabase.find(itemId);
 
 		if (item == nullptr)
 			continue;
 
 		std::cout << item->name;
 
-		if (quantity > 1)
-		{
+		if (quantity > 1){
 			std::cout << " x" << quantity;
 		}
 
@@ -1307,21 +1305,20 @@ void Game::lookForMerchant() {
 	}
 }
 
+
 void Game::tradeWithMerchant(const std::string& merchantId)
 {
-	const MerchantDefinition* merchant =
-		_actorDatabase.findMerchant(merchantId);
+	PlayerState& player = _gameState.player;
+	const MerchantDefinition* merchant = _actorDatabase.findMerchant(merchantId);
 
-	if (merchant == nullptr)
-	{
+	if (merchant == nullptr){
 		std::cout << "Error: Merchant not found.\n";
 		return;
 	}
 
-	while (true)
-	{
+	while (true){
 		std::cout << "\n===== " << merchant->name << " =====\n";
-		std::cout << "Gold: " << _gameState.player.gold << "\n\n";
+		std::cout << "Gold: " << player.gold << "\n\n";
 
 		std::cout << "1. Buy\n";
 		std::cout << "2. Sell\n";
@@ -1337,25 +1334,19 @@ void Game::tradeWithMerchant(const std::string& merchantId)
 		// =========================
 		// BUY
 		// =========================
-		if (selection == 1)
-		{
-			while (true)
-			{
+		if (selection == 1){
+			while (true){
 				std::cout << "\n===== BUY =====\n";
-				std::cout << "Gold: "
-					<< _gameState.player.gold
-					<< "\n\n";
+				std::cout << "Gold: " << player.gold<< "\n\n";
 
-				if (merchant->stock.empty())
-				{
+				if (merchant->stock.empty()){
 					std::cout << "This merchant has nothing for sale.\n";
 					break;
 				}
 
 				std::vector<std::string> itemIds;
 
-				for (const std::string& itemId : merchant->stock)
-				{
+				for (const std::string& itemId : merchant->stock){
 					const ItemDefinition* item =
 						_itemDatabase.find(itemId);
 
@@ -1364,16 +1355,10 @@ void Game::tradeWithMerchant(const std::string& merchantId)
 
 					itemIds.push_back(itemId);
 
-					std::cout << itemIds.size()
-						<< ". "
-						<< item->name
-						<< " - "
-						<< item->value
-						<< " gold\n";
+					std::cout << itemIds.size()	<< ". "	<< item->name<< " - "<< item->value	<< " gold\n";
 				}
 
-				std::cout << "0. Back\n";
-				std::cout << "\n> ";
+				std::cout << "0. Back\n\n> ";
 
 				int itemSelection;
 				std::cin >> itemSelection;
@@ -1381,94 +1366,64 @@ void Game::tradeWithMerchant(const std::string& merchantId)
 				if (itemSelection == 0)
 					break;
 
-				if (itemSelection < 1 ||
-					itemSelection > static_cast<int>(itemIds.size()))
-				{
+				if (itemSelection < 1 ||itemSelection > static_cast<int>(itemIds.size())){
 					std::cout << "Invalid selection.\n";
 					continue;
 				}
 
-				const std::string& itemId =
-					itemIds[itemSelection - 1];
+				const std::string& itemId =	itemIds[itemSelection - 1];
 
-				const ItemDefinition* item =
-					_itemDatabase.find(itemId);
+				const ItemDefinition* item =_itemDatabase.find(itemId);
 
-				if (item == nullptr)
-				{
+				if (item == nullptr){
 					std::cout << "Error: Item not found.\n";
 					continue;
 				}
 
-				if (_gameState.player.gold < item->value)
-				{
-					std::cout << "You cannot afford "
-						<< item->name
-						<< ".\n";
+				if (_gameState.player.gold < item->value){
+					std::cout << "You cannot afford "<< item->name	<< ".\n";
 					continue;
 				}
 
-				_gameState.player.gold -= item->value;
-				_gameState.player.inventory[itemId]++;
+				player.gold -= item->value;
+				player.inventory[itemId]++;
 
-				std::cout << "\nYou bought "
-					<< item->name
-					<< " for "
-					<< item->value
-					<< " gold.\n";
+				std::cout << "\nYou bought "<< item->name<< " for "	<< item->value	<< " gold.\n";
 			}
 		}
 
 		// =========================
 		// SELL
 		// =========================
-		else if (selection == 2)
-		{
-			while (true)
-			{
+		else if (selection == 2){
+			while (true){
 				std::cout << "\n===== SELL =====\n";
-				std::cout << "Gold: "
-					<< _gameState.player.gold
-					<< "\n\n";
+				std::cout << "Gold: "<< player.gold	<< "\n\n";
 
 				std::vector<std::string> itemIds;
 
-				for (const auto& [itemId, quantity] :
-					_gameState.player.inventory)
-				{
+				for (const auto& [itemId, quantity] :player.inventory){
 					if (quantity <= 0)
 						continue;
 
-					const ItemDefinition* item =
-						_itemDatabase.find(itemId);
+					const ItemDefinition* item =_itemDatabase.find(itemId);
 
 					if (item == nullptr)
 						continue;
 
 					// Keys and important quest items cannot be sold.
-					if (item->type == ItemType::KEY ||
-						item->type == ItemType::KEYITEM)
-					{
+					if (item->type == ItemType::KEY ||item->type == ItemType::KEYITEM){
 						continue;
 					}
 
 					itemIds.push_back(itemId);
 
-					const int sellPrice =
-						item->value / 2;
+					const int sellPrice =item->value / 2;
 
-					std::cout << itemIds.size()
-						<< ". "
-						<< item->name
-						<< " x"
-						<< quantity
-						<< " - "
-						<< sellPrice
-						<< " gold\n";
+					std::cout << itemIds.size()	<< ". "	<< item->name<< " x"<< quantity	<< " - "<< sellPrice<< " gold\n";
 				}
 
-				if (itemIds.empty())
-				{
+				if (itemIds.empty()){
 					std::cout << "You have nothing to sell.\n";
 					break;
 				}
@@ -1482,59 +1437,94 @@ void Game::tradeWithMerchant(const std::string& merchantId)
 				if (itemSelection == 0)
 					break;
 
-				if (itemSelection < 1 ||
-					itemSelection > static_cast<int>(itemIds.size()))
-				{
+				if (itemSelection < 1 ||itemSelection > static_cast<int>(itemIds.size())){
 					std::cout << "Invalid selection.\n";
 					continue;
 				}
 
-				const std::string& itemId =
-					itemIds[itemSelection - 1];
+				const std::string& itemId =	itemIds[itemSelection - 1];
 
-				const ItemDefinition* item =
-					_itemDatabase.find(itemId);
+				const ItemDefinition* item =_itemDatabase.find(itemId);
 
-				if (item == nullptr)
-				{
+				if (item == nullptr){
 					std::cout << "Error: Item not found.\n";
 					continue;
 				}
 
-				auto inventoryItem =
-					_gameState.player.inventory.find(itemId);
+				auto inventoryItem =_gameState.player.inventory.find(itemId);
 
-				if (inventoryItem ==
-					_gameState.player.inventory.end() ||
-					inventoryItem->second <= 0)
-				{
+				if (inventoryItem ==_gameState.player.inventory.end() ||inventoryItem->second <= 0){
 					std::cout << "You don't have that item.\n";
 					continue;
 				}
 
-				const int sellPrice =
-					item->value / 2;
+				const int sellPrice =item->value / 2;
 
 				inventoryItem->second--;
 
 				_gameState.player.gold += sellPrice;
 
-				std::cout << "\nYou sold "
-					<< item->name
-					<< " for "
-					<< sellPrice
-					<< " gold.\n";
+				std::cout << "\nYou sold "<< item->name	<< " for "<< sellPrice<< " gold.\n";
 
-				if (inventoryItem->second <= 0)
-				{
+				if (inventoryItem->second <= 0){
 					_gameState.player.inventory.erase(inventoryItem);
 				}
 			}
 		}
-		else
-		{
+		else{
 			std::cout << "Invalid selection.\n";
 		}
+	}
+}
+
+bool Game::hasRequiredKey(const std::vector<std::string&> keys) const {
+	const PlayerState& player = _gameState.player;
+	for (const std::string& keyId : keys) {
+		auto it = player.inventory.find(keyId);
+		if (it != player.inventory.end() && it->second > 0)
+			return true;
+	}
+
+	return false;
+}
+
+void Game::openContainer(const std::string& containerId) {
+
+}
+
+void Game::openDoor(const std::string& doorId) {
+
+}
+
+
+
+void Game::pickUpItems() {
+	PlayerState& player = _gameState.player;
+	const RoomDefinition* room = _roomDatabase.find(player.currentRoom);
+	if (room == nullptr) {
+		std::cout << "Error: No room found :D\n";
+		return;
+	}
+
+	RoomState& roomState = _gameState.rooms[player.currentRoom];
+
+	for (const auto& [itemId, quantity] : room->loot) {
+		if (roomState.itemsPickedUp.contains(itemId)) {
+			continue;
+		}
+
+		const ItemDefinition* item = _itemDatabase.find(itemId);
+
+		if (item == nullptr)
+			continue;
+
+		player.inventory[itemId] += quantity;
+		roomState.itemsPickedUp[itemId] = quantity;
+
+		std::cout << "Picked up " << item->name;
+		if(quantity > 1)
+			std::cout << " x" << quantity;
+		std::cout << '.\n';
 	}
 }
 

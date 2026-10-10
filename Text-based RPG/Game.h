@@ -41,6 +41,10 @@ private:
 	void lookForNPCtoTalkTo();
 	void lookForMerchant();
 	void tradeWithMerchant(const std::string& merchantId);
+	void openContainer(const std::string& containerId);
+	void openDoor(const std::string& doorId);
+	bool hasRequiredKey(const std::vector <std::string&> keys) const;
+	void pickUpItems();
 public:
 	void newGame();
 	void run();
