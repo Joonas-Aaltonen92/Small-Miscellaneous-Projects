@@ -1477,7 +1477,7 @@ void Game::tradeWithMerchant(const std::string& merchantId)
 	}
 }
 
-bool Game::hasRequiredKey(const std::vector<std::string&> keys) const {
+bool Game::hasRequiredKey(const std::vector<std::string>& keys) const {
 	const PlayerState& player = _gameState.player;
 	for (const std::string& keyId : keys) {
 		auto it = player.inventory.find(keyId);
@@ -1488,12 +1488,196 @@ bool Game::hasRequiredKey(const std::vector<std::string&> keys) const {
 	return false;
 }
 
-void Game::openContainer(const std::string& containerId) {
+void Game::lookForContainers() {
+	const PlayerState& player = _gameState.player;
+	const RoomDefinition* room = _roomDatabase.find(player.currentRoom);
+	if (room == nullptr) {
+		std::cout << "Error: No room found :D\n";
+		return;
+	}
 
+	std::vector<std::string> containerIds;
+	for (const std::string& containerId : room->containers) {
+		const ContainerDefinition* container = _actorDatabase.findContainer(containerId);
+		if (container == nullptr)
+			continue;
+
+		containerIds.push_back(containerId);
+	}
+	if (containerIds.empty()) {
+		std::cout << "\nNo merchants around...\n\n";
+		return;
+	}
+	while (true) {
+		std::cout << "\n=====INTERACT=========\n\n";
+
+		for (size_t i = 0; i < containerIds.size(); ++i) {
+			const ContainerDefinition* container = _actorDatabase.findContainer(containerIds[i]);
+			if (container == nullptr)
+				continue;
+			std::cout << i + 1 << ". Interact with " << container->name << '\n';
+		}
+		std::cout << "0. Return\n\n>";
+		int selection;
+		std::cin >> selection;
+		if (selection == 0)
+			return;
+		if (selection < 1 || selection > static_cast<int>(containerIds.size())) {
+			std::cout << "Invalid selection :D\n";
+			continue;
+		}
+		openContainer(containerIds[selection - 1]);
+	}
+}
+
+void Game::openContainer(const std::string& containerId) {
+	PlayerState& player = _gameState.player;
+
+	const RoomDefinition* room =_roomDatabase.find(player.currentRoom);
+
+	if (room == nullptr){
+		std::cout << "Error: Current room not found.\n";
+		return;
+	}
+
+	if (std::find(room->containers.begin(),	room->containers.end(),	containerId) == room->containers.end()){
+		std::cout << "That container is not here.\n";
+		return;
+	}
+
+	const ContainerDefinition* container =	_actorDatabase.findContainer(containerId);
+
+	if (container == nullptr){
+		std::cout << "Error: Container not found.\n";
+		return;
+	}
+
+	RoomState& roomState =	_gameState.rooms[player.currentRoom];
+
+	if (std::find(roomState.emptiedContainers.begin(),roomState.emptiedContainers.end(),containerId) != roomState.emptiedContainers.end()){
+		std::cout << container->name
+			<< " has already been emptied.\n";
+		return;
+	}
+
+	if (!hasRequiredKey(container->keys)){
+		std::cout << container->name<< " is locked. You don't have a suitable key.\n";
+		return;
+	}
+
+	std::cout << "\nYou open "<< container->name<< ".\n";
+
+	bool foundLoot = false;
+
+	for (const auto& [itemId, quantity] : container->items){
+		if (quantity <= 0)
+			continue;
+
+		const ItemDefinition* item =_itemDatabase.find(itemId);
+
+		if (item == nullptr){
+			std::cout << "Warning: Unknown item ID: "<< itemId << '\n';
+			continue;
+		}
+
+		player.inventory[itemId] += quantity;
+
+		std::cout << "Found "<< item->name;
+
+		if (quantity > 1)
+			std::cout << " x" << quantity;
+
+		std::cout << ".\n";
+
+		foundLoot = true;
+	}
+
+	if (!foundLoot)
+		std::cout << "The container is empty.\n";
+
+	roomState.emptiedContainers.insert(containerId);
+}
+
+void Game::lookForDoors() {
+	const PlayerState& player = _gameState.player;
+	const RoomDefinition* room = _roomDatabase.find(player.currentRoom);
+	if (room == nullptr) {
+		std::cout << "Error: No room found :D\n";
+		return;
+	}
+
+	std::vector<std::string> doorIds;
+	for (const std::string& doorId : room->doors) {
+		const DoorDefinition* door = _actorDatabase.findDoor(doorId);
+		if (door == nullptr)
+			continue;
+
+		doorIds.push_back(doorId);
+	}
+	if (doorIds.empty()) {
+		std::cout << "\nNo doors around...\n\n";
+		return;
+	}
+	while (true) {
+		std::cout << "\n=====INTERACT=========\n\n";
+
+		for (size_t i = 0; i < doorIds.size(); ++i) {
+			const ContainerDefinition* door = _actorDatabase.findContainer(doorIds[i]);
+			if (door == nullptr)
+				continue;
+			std::cout << i + 1 << ". Interact with " << door->name << '\n';
+		}
+		std::cout << "0. Return\n\n>";
+		int selection;
+		std::cin >> selection;
+		if (selection == 0)
+			return;
+		if (selection < 1 || selection > static_cast<int>(doorIds.size())) {
+			std::cout << "Invalid selection :D\n";
+			continue;
+		}
+		openContainer(doorIds[selection - 1]);
+	}
 }
 
 void Game::openDoor(const std::string& doorId) {
+	const PlayerState& player = _gameState.player;
 
+	const RoomDefinition* room =_roomDatabase.find(player.currentRoom);
+
+	if (room == nullptr){
+		std::cout << "Error: Current room not found.\n";
+		return;
+	}
+
+	if (std::find(room->doors.begin(),room->doors.end(),doorId) == room->doors.end()){
+		std::cout << "That door is not here.\n";
+		return;
+	}
+
+	const DoorDefinition* door =_actorDatabase.findDoor(doorId);
+
+	if (door == nullptr){
+		std::cout << "Error: Door not found.\n";
+		return;
+	}
+
+	RoomState& roomState =_gameState.rooms[player.currentRoom];
+
+	if (std::find(roomState.openedDoors.begin(),roomState.openedDoors.end(),doorId) != roomState.openedDoors.end()){
+		std::cout << door->name
+			<< " is already unlocked.\n";
+		return;
+	}
+
+	if (!hasRequiredKey(door->keys)){
+		std::cout << door->name	<< " is locked. You don't have a suitable key.\n";
+		return;
+	}
+
+	roomState.openedDoors.insert(doorId);
+
+	std::cout << "You unlock "<< door->name<< ".\n";
 }
 
 
