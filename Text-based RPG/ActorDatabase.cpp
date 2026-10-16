@@ -163,6 +163,7 @@ bool ActorDatabase::loadDoorFromJson(const std::string& filename){
 		door.id = id;
 		door.name = definition.value("name", "");
 		door.description = definition.value("description", "");
+		door.destination = definition.value("destination", "");
 		if (definition.contains("keys") && definition["keys"].is_array()) {//Should have keys because open doors are redundant
 			for (const auto& keyId : definition["keys"]) {
 				door.keys.push_back(keyId.get<std::string>());

@@ -24,7 +24,7 @@ struct RoomDefinition {
 	bool safeZone;//This is a check for enemies that roam around dungeons to not go into towns/safe areas.
 	
 	std::unordered_map<Exits, std::string> exits;//Key is direction, value is Room ID of the connected room.
-	std::unordered_map<Exits, std::string> exitDoors;
+	std::unordered_map<Exits, std::string> exitDoors; //Value is the doorID
 	
 	std::vector<std::string> npcs;
 	std::vector<std::string> containers;

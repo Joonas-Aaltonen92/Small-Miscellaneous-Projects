@@ -55,6 +55,16 @@ bool RoomDatabase::loadFromJson(const std::string& filename) {
 			std::cout << "WARNING: No exits found for Room (" << id << "), check JSON just in case.\n";
 		}
 
+		if (definition.contains("exitDoors") && definition["exitDoors"].is_object()) {
+			for (const auto& [exitString, doorId] : definition["exitDoors"].items()) {
+				Exits exit = getExitFromString(exitString);
+				room.exitDoors[exit] = doorId.get<std::string>();
+			}
+		}
+		else {
+			std::cout << "WARNING: No exit doors found for Room (" << id << "), check JSON just in case.\n";
+		}
+
 		if (definition.contains("npcs") && definition["npcs"].is_array()) {
 			for (const auto& actorId : definition["actors"]) {
 				room.npcs.push_back(actorId.get<std::string>());

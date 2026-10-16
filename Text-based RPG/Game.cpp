@@ -142,10 +142,10 @@ namespace {
 
 		player.name = jsonData.value("name", "unknown");
 		player.classId = jsonData.value("classId", "unknown class");
-		player.level = jsonData.value("level", 0);
+		player.level = jsonData.value("level", 1);
 		player.experience = jsonData.value("experience", 0);
 		player.gold = jsonData.value("gold", 0);
-		player.walletSize = jsonData.value("walletSize", 0);
+		player.walletSize = jsonData.value("walletSize", 99);
 		if (jsonData.contains("stats"))
 			player.stats = deserializeActorStats(jsonData["stats"]);
 		if (jsonData.contains("inventory"))
@@ -431,8 +431,20 @@ void Game::handleGameInput(char c)
 		saveGame("save.json");
 		_inGame = false;
 		return;
-	case 'x':
+	case 't': //T for talk
 		lookForNPCtoTalkTo();
+		return;
+	case 'm':
+		lookForMerchant();
+		return;
+	case 'p'://P for pickup
+		pickUpItems();
+		return;
+	case 'o'://O for openings (doors)
+		lookForDoors();
+		return;
+	case 'c': //C for containers
+		lookForContainers();
 		return;
 	default:
 		std::cout << "Unknown command.\n";
@@ -447,11 +459,37 @@ void Game::handleGameInput(char c)
 
 	//Store the previous room before moving to next room.
 	const std::string destination = exit->second;
+
+	RoomState& currentRoomState = _gameState.rooms[_gameState.player.currentRoom];
+
+	//Check whether a door blocks this exit
+	for (const std::string& doorId : currentRoom->doors) {
+		const DoorDefinition* door = _actorDatabase.findDoor(doorId);
+		if (door == nullptr)
+			continue;
+
+		//This door doesn't lead through the selected exit
+		if (door->destination != destination)
+			continue;
+
+		//An unlocked door doesn't block movement
+		if (currentRoomState.openedDoors.contains(doorId))
+			continue;
+
+		//Doors that require no key are freely passable (a door should always require a key, though. Otherwise it's redundant)
+		if (door->keys.empty())
+			continue;
+
+		//This exit is blocked by a locked door
+		std::cout << door->name << " is locked. You need to unlock it first to continue into that direction.\n";
+		return;
+	}
+
 	_previousRoom = _gameState.player.currentRoom;
 	_gameState.player.currentRoom = destination;
 
-	RoomState& roomState = _gameState.rooms[destination];
-	roomState.visited = true;
+	currentRoomState = _gameState.rooms[destination];
+	currentRoomState.visited = true;
 
 	checkEnemyEncounter();
 }
@@ -1478,6 +1516,9 @@ void Game::tradeWithMerchant(const std::string& merchantId)
 }
 
 bool Game::hasRequiredKey(const std::vector<std::string>& keys) const {
+	if (keys.empty())
+		return true;
+	
 	const PlayerState& player = _gameState.player;
 	for (const std::string& keyId : keys) {
 		auto it = player.inventory.find(keyId);
@@ -1554,7 +1595,7 @@ void Game::openContainer(const std::string& containerId) {
 
 	RoomState& roomState =	_gameState.rooms[player.currentRoom];
 
-	if (std::find(roomState.emptiedContainers.begin(),roomState.emptiedContainers.end(),containerId) != roomState.emptiedContainers.end()){
+	if (roomState.emptiedContainers.contains(containerId)){
 		std::cout << container->name
 			<< " has already been emptied.\n";
 		return;
@@ -1622,7 +1663,7 @@ void Game::lookForDoors() {
 		std::cout << "\n=====INTERACT=========\n\n";
 
 		for (size_t i = 0; i < doorIds.size(); ++i) {
-			const ContainerDefinition* door = _actorDatabase.findContainer(doorIds[i]);
+			const DoorDefinition* door = _actorDatabase.findDoor(doorIds[i]);
 			if (door == nullptr)
 				continue;
 			std::cout << i + 1 << ". Interact with " << door->name << '\n';
@@ -1664,7 +1705,7 @@ void Game::openDoor(const std::string& doorId) {
 
 	RoomState& roomState =_gameState.rooms[player.currentRoom];
 
-	if (std::find(roomState.openedDoors.begin(),roomState.openedDoors.end(),doorId) != roomState.openedDoors.end()){
+	if (roomState.openedDoors.contains(doorId)){
 		std::cout << door->name
 			<< " is already unlocked.\n";
 		return;

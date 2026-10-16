@@ -24,6 +24,7 @@ struct DoorDefinition {
 	std::string id;
 	std::string name;
 	std::string description;
+	std::string destination;
 	std::vector<std::string> keys; //IDs for all keys that can open the door (iron key, lock pick, master key, etc.)
 };
 
